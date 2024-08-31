@@ -7,7 +7,7 @@ from time import time
 import torch
 from datasets import Dataset, DatasetDict
 from huggingface_hub import login
-from peft import prepare_model_for_kbit_training, get_peft_model, LoraConfig
+from peft import prepare_model_for_kbit_training, get_peft_model, LoraConfig, PeftModel, PeftConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizer, BitsAndBytesConfig, TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from trl import SFTTrainer
 import bitsandbytes
@@ -34,7 +34,7 @@ class Aici:
     def __detect_device(self):
         if torch.cuda.is_available():
             self.device = torch.device("cuda")  # NVIDIA CUDA
-            torch.cuda.set_per_process_memory_fraction(0.9)
+            torch.cuda.set_per_process_memory_fraction(0.75)
         elif torch.backends.mps.is_available():
             self.device = torch.device("mps")  # Apple M1/M2 GPUs
         else:
@@ -142,6 +142,8 @@ class Aici:
 				attn_implementation='eager',
 				device_map="auto",
 				quantization_config=bnb_config,
+                low_cpu_mem_usage=True,
+                max_memory={0: "10GiB"},
 			)
         else:
             print("No GPU available, loading model without quantization.")
@@ -149,7 +151,9 @@ class Aici:
 				self.config.source_model,
 				attn_implementation='eager',
 				device_map="auto",
-				torch_dtype=torch.float16  # or float32 if memory is a concern
+				torch_dtype=torch.float16,  # or float32 if memory is a concern
+                low_cpu_mem_usage=True,
+                max_memory={0: "10GiB"},
 			).to(self.device)
         print(f"\n## Loaded Model: {self.config.source_model}\n")
         self.model.config.use_cache = False
@@ -166,9 +170,9 @@ class Aici:
         target_modules = list(lora_modules_names)
 
         self.peft_config = LoraConfig(
-            lora_alpha=32,
-            lora_dropout=0.1,
-            r=64,
+            lora_alpha=16,
+            lora_dropout=0.05,
+            r=4,
             bias="none",
             task_type=self.config.task_type,
             target_modules=target_modules
@@ -243,39 +247,43 @@ class Aici:
     def __train_dataset(self, dataset):
         training_arguments = TrainingArguments(
             output_dir=self.config.train_output_dir,
-            per_device_train_batch_size=2,  # Adjusted batch size
-            gradient_accumulation_steps=4,  # Adjusted gradient accumulation
-            optim="paged_adamw_32bit",
-            learning_rate=1e-5,  # Lowered learning rate
-            lr_scheduler_type="cosine",
+            per_device_train_batch_size=1,  # Adjusted batch size
+            #gradient_accumulation_steps=4,  # Adjusted gradient accumulation
+            #optim="paged_adamw_32bit",
+            #learning_rate=1e-5,  # Lowered learning rate
+            #lr_scheduler_type="cosine",
             num_train_epochs=self.config.epochs,  # Increased number of epochs
-            logging_steps=5,  # Log every step
+            #logging_steps=1  # Log every step
+            logging_strategy="epoch",  # Log once per epoch
             fp16=True,  # Disable mixed precision temporarily
-            gradient_checkpointing=True
+            fp16_opt_level="O2",
+            #gradient_checkpointing=True
         )
 
-        with torch.autocast(device_type='cuda', dtype=torch.float16):
-            trainer = SFTTrainer(
-                model=self.model,
-                train_dataset=dataset["train"],
-                tokenizer=self.tokenizer,
-                args=training_arguments,
-                peft_config=self.peft_config,
-                max_seq_length=self.config.train_max_length,  # Use max_seq_length directly
-                dataset_text_field="input_ids"  # Use input_ids directly
-            )
+        torch.cuda.empty_cache()
 
-            # Add the EarlyStoppingCallback
-            trainer.add_callback(EarlyStoppingCallback())
+        trainer = SFTTrainer(
+            model=self.model,
+            train_dataset=dataset["train"],
+            tokenizer=self.tokenizer,
+            args=training_arguments,
+            peft_config=self.peft_config,
+            max_seq_length=self.config.train_max_length,  # Use max_seq_length directly
+            dataset_text_field="input_ids"  # Use input_ids directly
+        )
 
-            print("\n## Starting Training\n")
-            trainer.train()
-            print("\n## Finished Training\n")
+        # Add the EarlyStoppingCallback
+        trainer.add_callback(EarlyStoppingCallback())
 
-            epoch_output = f"{self.config.target_model}"
-            print(f"\n## Saving: {epoch_output}\n")
-            self.tokenizer.save_pretrained(epoch_output)
-            self.model.save_pretrained(epoch_output)
+        print("\n## Starting Training\n")
+        trainer.train()
+        torch.cuda.empty_cache()
+        print("\n## Finished Training\n")
+
+        epoch_output = f"{self.config.target_model}"
+        print(f"\n## Saving: {epoch_output}\n")
+        self.tokenizer.save_pretrained(epoch_output)
+        self.model.save_pretrained(epoch_output)
 
     def train(self):
         os.environ["WANDB_MODE"] = "offline"
