@@ -1,0 +1,50 @@
+{
+	"guid": "333b8809-ef38-4571-8c4e-e72060ceda01",
+	"title": "Corrections",
+	"lessons": [
+		{
+			"guid": "a34c3894-d902-43bc-9bad-c78eb708997f",
+			"title": "Load HTTPS Certificate from Files in Express.",
+			"messages": [
+				{
+					"role": "user",
+					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+				},
+				{
+					"role": "assistant",
+					"content": "I am a honest, professional, direct, concise programmer."
+				},
+				{
+					"role": "user",
+					"content": "complete the following so that we load the https certificate from files.  Also add the app listen to use port 4433.\n\n```\nimport express from \"express\";\nimport { Config } from \"./Config\"\n\nclass WebApp {\n\tprivate app: express;\n\tpublic execute() {\n\t\tthis.app = express();\n\n\t\tthis.app.use(express.json());\n\t\tthis.app.use(\"/static\", express.static(Config.staticDirectory));\n\t\tthis.app.use(\"/scripts\", express.static(Config.javascriptDirectory));\n\n\t\t// load https certificates\n\n\t\t// app listen\n\t}\n}\n\nconst app = new WebApp();\napp.execute();\n```"
+				},
+				{
+					"role": "assistant",
+					"content": "```javascript\nimport express from \"express\";\nimport { Config } from \"./Config\"\nimport fs from \"fs\";\nimport https from \"https\";\n\nclass WebApp {\n\tprivate app: express.Express = express();\n\tpublic execute() {\n\t\tthis.app.use(express.json());\n\t\tthis.app.use(\"/static\", express.static(Config.staticDirectory));\n\t\tthis.app.use(\"/scripts\", express.static(Config.javascriptDirectory));\n\n\t\tconst options = {\n\t\t\tkey: fs.readFileSync(Config.httpsCertPath),\n\t\t\tcert: fs.readFileSync(Config.httpsKeyPath),\n\t\t};\n\t\tconst server = https.createServer(options, this.app);\n\t\tserver.listen(Config.httpsPort, () => {\n\t\t\tconsole.log(`Server listening on port ${Config.httpsPort}`);\n\t\t});\n\t}\n}\n\nconst app = new WebApp();\napp.execute();\n```"
+				}
+			]
+		},
+		{
+			"guid": "0e3f0fca-389d-4270-8488-5833f6e7d50e",
+			"title": "Add Liveliness/Health Check Routes to Express App",
+			"messages": [
+				{
+					"role": "user",
+					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+				},
+				{
+					"role": "assistant",
+					"content": "I am a honest, professional, direct, concise programmer."
+				},
+				{
+					"role": "user",
+					"content": "The following is \"common/src/models/ResponseDto\":\n\n```\nexport interface ResponseDto<T> {\n\tdata?: T;\n\terror?: string;\n}\n```\n\nUsing the following, add:\n\n- liveliness and health check routes\n- those route should be implemented as private functions that return a ResponseDto of string where \"OK\" is the good response\n\n\n```\nimport express from \"express\";\nimport { Config } from \"./Config\"\nimport fs from \"fs\";\nimport https from \"https\";\n\nclass WebApp {\n\tprivate app: express.Express = express();\n\tpublic execute() {\n\t\tthis.app.use(express.json());\n\t\tthis.app.use(\"/static\", express.static(Config.staticDirectory));\n\t\tthis.app.use(\"/scripts\", express.static(Config.javascriptDirectory));\n\n\t\tthis.app.get(\"/api/v0/health\", this.getHealth.bind(this));\n\t\tthis.app.get(\"/api/v0/liveness\", this.getLiveliness.bind(this));\n\n\t\tconst options = {\n\t\t\tkey: fs.readFileSync(Config.httpsCertPath),\n\t\t\tcert: fs.readFileSync(Config.httpsKeyPath),\n\t\t};\n\t\tconst server = https.createServer(options, this.app);\n\t\tserver.listen(Config.httpsPort, () => {\n\t\t\tconsole.log(`Server listening on port ${Config.httpsPort}`);\n\t\t});\n\t}\n\n}\n\nconst app = new WebApp();\napp.execute();\n```"
+				},
+				{
+					"role": "assistant",
+					"content": "```javascript\nimport express from \"express\";\nimport { Config } from \"./Config\"\nimport fs from \"fs\";\nimport https from \"https\";\nimport { ResponseDto } from \"common/src/models/ResponseDto\"\n\nclass WebApp {\n\tprivate app: express.Express = express();\n\tpublic execute() {\n\t\tthis.app.use(express.json());\n\t\tthis.app.use(\"/static\", express.static(Config.staticDirectory));\n\t\tthis.app.use(\"/scripts\", express.static(Config.javascriptDirectory));\n\n\t\tthis.app.get(\"/api/v0/health\", this.getHealth.bind(this));\n\t\tthis.app.get(\"/api/v0/liveness\", this.getLiveliness.bind(this));\n\n\t\tconst options = {\n\t\t\tkey: fs.readFileSync(Config.httpsCertPath),\n\t\t\tcert: fs.readFileSync(Config.httpsKeyPath),\n\t\t};\n\t\tconst server = https.createServer(options, this.app);\n\t\tserver.listen(Config.httpsPort, () => {\n\t\t\tconsole.log(`Server listening on port ${Config.httpsPort}`);\n\t\t});\n\t}\n\n\tpublic getHealth(req: express.Request, res: express.Response) {\n\t\tres.status(200).send({ data: \"OK\" } as ResponseDto<string>)\n\t}\n\n\tpublic getLiveliness(req: express.Request, res: express.Response) {\n\t\tres.status(200).send({ data: \"OK\" } as ResponseDto<string>)\n\t}\n}\n\nconst app = new WebApp();\napp.execute();\n```"
+				}
+			]
+		}
+	]
+}

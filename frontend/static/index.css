@@ -1,0 +1,215 @@
+@font-face {
+    font-family: 'body';
+    src: url('/static/Titillium_Web/TitilliumWeb-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'black';
+    src: url('/static/Titillium_Web/TitilliumWeb-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'italic';
+    src: url('/static/Titillium_Web/TitilliumWeb-LightItalic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+*,
+body {
+    box-sizing: border-box;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 15px;
+    font-family: body;
+    font-weight: lighter;
+    font-variant: normal;
+    color: #666;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #36b;
+    margin-top: 15px;
+}
+
+h1,
+h3,
+h5 {
+    font-family: black;
+}
+
+h2,
+h4,
+h6 {
+    font-family: italic;
+}
+
+h1,
+h2 {
+    font-size: 60px;
+}
+
+h1 {
+    margin-top: 0
+}
+
+h3,
+h4 {
+    font-size: 45px;
+}
+
+h5,
+h6 {
+    font-size: 30px;
+}
+
+* + p {
+    margin-top: 15px;
+}
+h1 + p {
+    margin-top: 0;
+}
+
+
+.marked {
+    font-family: 'body';
+}
+
+.marked h1,
+.marked h2,
+.marked h3,
+.marked h4,
+.marked h5,
+.marked h6 {
+    color: #36b;
+    margin-top: 15px;
+    margin-bottom: 0px;
+    line-height: 1.2;
+}
+
+.marked h1 {
+    font-family: black;
+    font-size: 45px;
+    margin-top: 0;
+}
+
+.marked h2 {
+    font-family: italic;
+    font-size: 45px;
+}
+
+.marked h3 {
+    font-family: black;
+    font-size: 30px;
+}
+
+.marked h4 {
+    font-family: italic;
+    font-size: 30px;
+}
+
+.marked h5 {
+    font-family: black;
+    font-size: 15px;
+}
+
+.marked h6 {
+    font-family: italic;
+    font-size: 15px;
+}
+
+.marked p {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-family: body;
+    font-size: 15px;
+}
+
+.marked ul,
+.marked ol {
+    padding-left: 30px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.marked ul li,
+.marked ol li {
+    margin-bottom: 7.5px;
+}
+
+.marked pre {
+    background-color: #eee;
+    padding: 15px;
+    border-radius: 7.5px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+
+}
+
+.marked code {
+    background-color: #eee;
+    border-radius: 3.25px;
+    font-family: monospace;
+    font-size: 15px;
+}
+
+.marked blockquote {
+    border-left: 4px solid #ddd;
+    margin: 0;
+    padding: 15px 25px;
+    background-color: #eee;
+}
+
+.marked table {
+    border-collapse: collapse;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 100%;
+    font-size: 15px;
+}
+
+.marked th,
+.marked td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.marked th {
+    background-color: #eee;
+    font-weight: bold;
+}
+
+.marked img {
+    max-width: 100%;
+    height: auto;
+}
+
+.marked a {
+    color: #36c;
+    text-decoration: none;
+}
+
+.marked a:hover {
+    text-decoration: underline;
+}
+
+.marked hr {
+    border: 0;
+    height: 1px;
+    background: #ddd;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

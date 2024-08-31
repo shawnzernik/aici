@@ -1,0 +1,21 @@
+{
+	"terminal.integrated.scrollback": 1000000,
+
+	// Ensure VSCode uses the correct Python interpreter from your .venv
+    "python.pythonPath": "${workspaceFolder}/backend/.venv/bin/python",
+
+    // Automatically activate the virtual environment in the terminal
+    "python.terminal.activateEnvironment": true,
+
+    // Set the Python language server to Pylance for better IntelliSense support
+    "python.languageServer": "Pylance",
+
+    // Enable or disable type checking mode
+    "python.analysis.typeCheckingMode": "basic",
+
+    // Ensure library code is used for IntelliSense
+    "python.analysis.useLibraryCodeForTypes": true,
+
+    // Optionally auto-complete function parentheses
+    "python.analysis.completeFunctionParens": true
+}
