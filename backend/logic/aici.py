@@ -34,6 +34,7 @@ class Aici:
     def __detect_device(self):
         if torch.cuda.is_available():
             self.device = torch.device("cuda")  # NVIDIA CUDA
+            torch.cuda.set_per_process_memory_fraction(0.9)
         elif torch.backends.mps.is_available():
             self.device = torch.device("mps")  # Apple M1/M2 GPUs
         else:
@@ -52,6 +53,7 @@ class Aici:
         self.model = AutoModelForCausalLM.from_pretrained(
             self.config.model,
             torch_dtype=torch.float16,
+            max_memory={0: "10GiB"},
             low_cpu_mem_usage=True,
         ).to(self.device)
 
@@ -180,6 +182,8 @@ class Aici:
         files = FileHelper().list(Config.datasets_dir, ".ds.json")
 
         messages = []
+        max_token_count = 0
+
         for file in files:
             contents = FileHelper().read(Config.datasets_dir + "/" + file + ".ds.json")
             jsonContents = json.loads(contents)
@@ -193,7 +197,18 @@ class Aici:
                     max_length=self.config.train_max_length  # Ensure consistent max length
                 )
 
-                input_ids_length = len(tokenized["input_ids"].squeeze(0).tolist())
+                notPadded = self.tokenizer.apply_chat_template(
+                    lesson["messages"],
+                    return_tensors="pt",
+                    return_dict=True
+                )
+
+                input_ids_length = len(notPadded["input_ids"].squeeze(0).tolist())
+
+                # Check for the longest prompt
+                if input_ids_length > max_token_count:
+                    max_token_count = input_ids_length
+
                 if input_ids_length > self.config.train_max_length:
                     error_message = (
                         f"Error: The tokenized sequence length {input_ids_length} exceeds "
@@ -220,43 +235,47 @@ class Aici:
 
         dataset_dict = DatasetDict({"train": dataset})
 
+        # Log the longest prompt and its token count
+        print(f"Longest prompt has {max_token_count} tokens.")
+
         return dataset_dict
 
     def __train_dataset(self, dataset):
         training_arguments = TrainingArguments(
             output_dir=self.config.train_output_dir,
-            per_device_train_batch_size=4,  # Adjusted batch size
-            gradient_accumulation_steps=2,  # Adjusted gradient accumulation
+            per_device_train_batch_size=2,  # Adjusted batch size
+            gradient_accumulation_steps=4,  # Adjusted gradient accumulation
             optim="paged_adamw_32bit",
             learning_rate=1e-5,  # Lowered learning rate
             lr_scheduler_type="cosine",
             num_train_epochs=self.config.epochs,  # Increased number of epochs
-            logging_steps=1,  # Log every step
-            fp16=False,  # Disable mixed precision temporarily
+            logging_steps=5,  # Log every step
+            fp16=True,  # Disable mixed precision temporarily
             gradient_checkpointing=True
         )
 
-        trainer = SFTTrainer(
-            model=self.model,
-            train_dataset=dataset["train"],
-            tokenizer=self.tokenizer,
-            args=training_arguments,
-            peft_config=self.peft_config,
-            max_seq_length=1000,  # Use max_seq_length directly
-            dataset_text_field="input_ids"  # Use input_ids directly
-        )
+        with torch.autocast(device_type='cuda', dtype=torch.float16):
+            trainer = SFTTrainer(
+                model=self.model,
+                train_dataset=dataset["train"],
+                tokenizer=self.tokenizer,
+                args=training_arguments,
+                peft_config=self.peft_config,
+                max_seq_length=self.config.train_max_length,  # Use max_seq_length directly
+                dataset_text_field="input_ids"  # Use input_ids directly
+            )
 
-        # Add the EarlyStoppingCallback
-        trainer.add_callback(EarlyStoppingCallback())
+            # Add the EarlyStoppingCallback
+            trainer.add_callback(EarlyStoppingCallback())
 
-        print("\n## Starting Training\n")
-        trainer.train()
-        print("\n## Finished Training\n")
+            print("\n## Starting Training\n")
+            trainer.train()
+            print("\n## Finished Training\n")
 
-        epoch_output = f"{self.config.target_model}"
-        print(f"\n## Saving: {epoch_output}\n")
-        self.tokenizer.save_pretrained(epoch_output)
-        self.model.save_pretrained(epoch_output)
+            epoch_output = f"{self.config.target_model}"
+            print(f"\n## Saving: {epoch_output}\n")
+            self.tokenizer.save_pretrained(epoch_output)
+            self.model.save_pretrained(epoch_output)
 
     def train(self):
         os.environ["WANDB_MODE"] = "offline"
