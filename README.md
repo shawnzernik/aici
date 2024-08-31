@@ -1,4 +1,4 @@
-# aici
+# Aici
 Artificial Intelligence Continuous Improvement
 
 ## Purpose
@@ -41,6 +41,8 @@ source /home/ubuntu/.local/share/pipx/venvs/transformers/bin/activate
 
 python3 train.py
 
+sudo docker stop b73546cf06b2
+sudo systemctl stop ollama
 sudo mkfs -t ext4 /dev/nvme1n1
 sudo mount /dev/nvme1n1 /drive2
 sudo chown -R ubuntu:ubuntu /drive2

@@ -4,3 +4,10 @@ node_modules
 __pycache__
 wandb
 index.js
+dist
+.idea/.gitignore
+.idea/aici.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/profiles_settings.xml

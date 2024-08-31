@@ -8,14 +8,6 @@
 			"messages": [
 				{
 					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
-				{
-					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"users\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"display_name\" VARCHAR(100) NOT NULL,\n\t\"email_address\" VARCHAR(250) NOT NULL,\n\t\"sms_phone\" VARCHAR(20) NOT NULL\n}\n\nALTER TABLE \"users\" ADD CONSTRAINT \"uk_users_email_address\" UNIQUE (\"email_address\");\n```\n\nDo not provide an explanation."
 				},
 				{
@@ -28,14 +20,6 @@
 			"guid": "a2b69939-8379-42ae-a236-3c7210830834",
 			"title": "UserEntity - Fixed",
 			"messages": [
-				{
-					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
 				{
 					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"users\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"display_name\" VARCHAR(100) NOT NULL,\n\t\"email_address\" VARCHAR(250) NOT NULL,\n\t\"sms_phone\" VARCHAR(20) NOT NULL\n}\n\nALTER TABLE \"users\" ADD CONSTRAINT \"uk_users_email_address\" UNIQUE (\"email_address\");\n```\n"
@@ -52,14 +36,6 @@
 			"messages": [
 				{
 					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
-				{
-					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"memberships\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"groups_guid\" UUID NOT NULL,\n\t\"users_guid\" UUID NOT NULL,\n\n\t\"is_included\" BOOLEAN NOT NULL DEFAULT FALSE\n}\n\nALTER TABLE \"memberships\" ADD CONSTRAINT \"uk_memberships_groups_guid_users_guid\" UNIQUE (\"groups_guid\", \"users_guid\");\n```\n\nDo not provide an explanation."
 				},
 				{
@@ -72,14 +48,6 @@
 			"guid": "a6c2522a-0d96-4886-969b-86c08cdcc272",
 			"title": "MembershipEntity - Fixed",
 			"messages": [
-				{
-					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
 				{
 					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"memberships\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"groups_guid\" UUID NOT NULL,\n\t\"users_guid\" UUID NOT NULL,\n\n\t\"is_included\" BOOLEAN NOT NULL DEFAULT FALSE\n}\n\nALTER TABLE \"memberships\" ADD CONSTRAINT \"uk_memberships_groups_guid_users_guid\" UNIQUE (\"groups_guid\", \"users_guid\");\n```\n\nDo not provide an explanation."
@@ -96,14 +64,6 @@
 			"messages": [
 				{
 					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
-				{
-					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"permissions\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"groups_guid\" UUID NOT NULL,\n\t\"securables_guid\" UUID NOT NULL,\n\n\t\"is_allowed\" BOOLEAN NOT NULL DEFAULT FALSE\n}\n\nALTER TABLE \"permissions\" ADD CONSTRAINT \"uk_permissions_groups_guid_securables_guid\" UNIQUE (\"groups_guid\", \"securables_guid\");\n```\n\nDo not provide an explanation."
 				},
 				{
@@ -116,14 +76,6 @@
 			"guid": "6efe323b-d7f2-48ba-85b4-f623ecd928cd",
 			"title": "PermissionEntity - Fixed",
 			"messages": [
-				{
-					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
 				{
 					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"permissions\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"groups_guid\" UUID NOT NULL,\n\t\"securables_guid\" UUID NOT NULL,\n\n\t\"is_allowed\" BOOLEAN NOT NULL DEFAULT FALSE\n}\n\nALTER TABLE \"permissions\" ADD CONSTRAINT \"uk_permissions_groups_guid_securables_guid\" UNIQUE (\"groups_guid\", \"securables_guid\");\n```\n"
@@ -140,14 +92,6 @@
 			"messages": [
 				{
 					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
-				{
-					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"securables\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"display_name\" VARCHAR(100) NOT NULL\n}\n\nALTER TABLE \"securables\" ADD CONSTRAINT \"uk_securables_display_name\" UNIQUE (\"display_name\");\n```\n\nDo not provide an explanation."
 				},
 				{
@@ -160,14 +104,6 @@
 			"guid": "e3b0feaf-1a70-4682-8c33-96929d272798",
 			"title": "SecurableEntity - Fixed",
 			"messages": [
-				{
-					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
 				{
 					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"securables\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"display_name\" VARCHAR(100) NOT NULL\n}\n\nALTER TABLE \"securables\" ADD CONSTRAINT \"uk_securables_display_name\" UNIQUE (\"display_name\");\n```\n"
@@ -184,14 +120,6 @@
 			"messages": [
 				{
 					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
-				{
-					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"passwords\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"users_guid\" UUID NOT NULL,\n\t\"created\" TIMESTAMP NOT NULL,\n\n\t\"salt\" VARCHAR(150) NOT NULL,\n\t\"hash\" VARCHAR(1100) NOT NULL,\n\t\"iterations\" INT NOT NULL\n}\n```\n\nDo not provide an explanation."
 				},
 				{
@@ -204,14 +132,6 @@
 			"guid": "00fcf9c2-a15f-4e1f-9a94-953588282a1c",
 			"title": "PasswordEntity - Fixed",
 			"messages": [
-				{
-					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
 				{
 					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"passwords\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"users_guid\" UUID NOT NULL,\n\t\"created\" TIMESTAMP NOT NULL,\n\n\t\"salt\" VARCHAR(150) NOT NULL,\n\t\"hash\" VARCHAR(1100) NOT NULL,\n\t\"iterations\" INT NOT NULL\n}\n```\n"
@@ -228,14 +148,6 @@
 			"messages": [
 				{
 					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
-				{
-					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"groups\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"display_name\" VARCHAR(100) NOT NULL,\n\t\"is_administrator\" BOOLEAN NOT NULL DEFAULT FALSE\n}\n\nALTER TABLE \"groups\" ADD CONSTRAINT \"uk_groups_display_name\" UNIQUE (\"display_name\");\n```\n\nDo not provide an explanation."
 				},
 				{
@@ -248,14 +160,6 @@
 			"guid": "f0abe2e7-7050-4968-b760-e56892a485db",
 			"title": "GroupEntity - Fixed",
 			"messages": [
-				{
-					"role": "user",
-					"content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
-				},
-				{
-					"role": "assistant",
-					"content": "I am a honest, professional, direct, concise programmer."
-				},
 				{
 					"role": "user",
 					"content": "When creating an entity from a Postgres table using TypeORM follow these rules:\n\n- import typeorm classes\n- import CopyInterface from \"common/src/logic/CopyInterface\"\n- import the data transfer object interface from \"common/src/models/\"\n- the class need to implement\n  - the data transfer object interface\n  - the CopyInterface of the data transfer object interface type\n- the copyFrom should do a memberwise copy from source to this\n- the copyTo should so a memberwise copy from this to desc\n- each property should have the @Column decorators\n- the primary key of UUID type should be a string\n\nThe following is an example:\n\n```\nimport { Entity, PrimaryColumn, Column } from 'typeorm';\nimport { CopyInterface } from \"common/src/logic/CopyInterface\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\n@Entity('groups')\nexport class GroupEntity implements GroupDto, CopyInterface<GroupDto> {\n\t@PrimaryColumn({ name: \"guid\" })\n\tpublic guid: string = \"\";\n\n\t@Column({ name: 'display_name' })\n\tpublic displayName: string = \"\";\n\n\t@Column({ name: 'is_administrator' })\n\tpublic isAdministrator: boolean = false;\n\n\tpublic copyFrom(source: GroupDto): void {\n\t\tthis.guid = source.guid;\n\t\tthis.displayName = source.displayName;\n\t\tthis.isAdministrator = source.isAdministrator\n\t}\n\tpublic copyTo(dest: GroupDto): void {\n\t\tdest.guid = this.guid;\n\t\tdest.displayName = this.displayName;\n\t\tdest.isAdministrator = this.isAdministrator\n\t}\n}\n```\n\nThe following is \"common/src/logic/CopyInterface\":\n\n```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```\n\nCreating an entity from the following Postgres table using TypeORM:\n\n```\nCREATE TABLE \"groups\" {\n\t\"guid\" UUID PRIMARY KEY,\n\n\t\"display_name\" VARCHAR(100) NOT NULL,\n\t\"is_administrator\" BOOLEAN NOT NULL DEFAULT FALSE\n}\n\nALTER TABLE \"groups\" ADD CONSTRAINT \"uk_groups_display_name\" UNIQUE (\"display_name\");\n```\n"

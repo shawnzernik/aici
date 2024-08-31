@@ -279,6 +279,10 @@ class Aici:
         trainer.train()
         torch.cuda.empty_cache()
         print("\n## Finished Training\n")
+        
+        print("\n## Starting Merge\n")
+        self.model = self.model.merge_and_unload()
+        print("\n## Finished Merge\n")
 
         epoch_output = f"{self.config.target_model}"
         print(f"\n## Saving: {epoch_output}\n")
