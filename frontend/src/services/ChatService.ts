@@ -9,7 +9,6 @@ export class ChatService {
             { method: "POST", body: JSON.stringify(messages) }
         );
 
-        const ret: Response = await response.json() as Response;
         if (!response.ok) {
             const detail = await response.json();
             if (detail["detail"])
@@ -18,6 +17,7 @@ export class ChatService {
                 throw new Error(response.statusText);
         }
 
+        const ret: Response = await response.json() as Response;
         return ret;
     }
     public static async reload(): Promise<void> {

@@ -53,12 +53,13 @@ class Aici:
         self.model = AutoModelForCausalLM.from_pretrained(
             self.config.model,
             torch_dtype=torch.float16,
-            max_memory={0: "10GiB"},
             low_cpu_mem_usage=True,
-        ).to(self.device)
+        )
 
         if torch.cuda.device_count() > 1:
             self.model = torch.nn.DataParallel(self.model)
+
+        self.model.gradient_checkpointing_enable()
 
         print(f"\n## Loaded Model: {self.config.model}\n")
 
@@ -143,7 +144,6 @@ class Aici:
 				device_map="auto",
 				quantization_config=bnb_config,
                 low_cpu_mem_usage=True,
-                max_memory={0: "10GiB"},
 			)
         else:
             print("No GPU available, loading model without quantization.")
@@ -153,11 +153,12 @@ class Aici:
 				device_map="auto",
 				torch_dtype=torch.float16,  # or float32 if memory is a concern
                 low_cpu_mem_usage=True,
-                max_memory={0: "10GiB"},
-			).to(self.device)
+			)
         print(f"\n## Loaded Model: {self.config.source_model}\n")
         self.model.config.use_cache = False
         self.model.config.pretraining_tp = 1
+
+        self.model.gradient_checkpointing_enable()
 
         cls = bitsandbytes.nn.Linear4bit
         lora_modules_names = set()
