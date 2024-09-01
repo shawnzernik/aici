@@ -59,7 +59,8 @@ class Aici:
         if torch.cuda.device_count() > 1:
             self.model = torch.nn.DataParallel(self.model)
 
-        self.model.gradient_checkpointing_enable()
+        # Disabled gradient checkpointing for speed
+        # self.model.gradient_checkpointing_enable()
 
         print(f"\n## Loaded Model: {self.config.model}\n")
 
@@ -137,28 +138,19 @@ class Aici:
         )
 
         print(f"\n## Loading Model: {self.config.source_model}\n")
-        if torch.cuda.is_available() or torch.backends.mps.is_available():
-            self.model = AutoModelForCausalLM.from_pretrained(
-				self.config.source_model,
-				attn_implementation='eager',
-				device_map="auto",
-				quantization_config=bnb_config,
-                low_cpu_mem_usage=True,
-			)
-        else:
-            print("No GPU available, loading model without quantization.")
-            self.model = AutoModelForCausalLM.from_pretrained(
-				self.config.source_model,
-				attn_implementation='eager',
-				device_map="auto",
-				torch_dtype=torch.float16,  # or float32 if memory is a concern
-                low_cpu_mem_usage=True,
-			)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.config.source_model,
+            attn_implementation='eager',
+            device_map="auto",
+            quantization_config=bnb_config,
+            low_cpu_mem_usage=True,
+        )
         print(f"\n## Loaded Model: {self.config.source_model}\n")
         self.model.config.use_cache = False
         self.model.config.pretraining_tp = 1
 
-        self.model.gradient_checkpointing_enable()
+        # Gradient checkpointing disabled for speed
+        # self.model.gradient_checkpointing_enable()
 
         cls = bitsandbytes.nn.Linear4bit
         lora_modules_names = set()
@@ -248,17 +240,15 @@ class Aici:
     def __train_dataset(self, dataset):
         training_arguments = TrainingArguments(
             output_dir=self.config.train_output_dir,
-            per_device_train_batch_size=1,  # Adjusted batch size
-            #gradient_accumulation_steps=4,  # Adjusted gradient accumulation
-            #optim="paged_adamw_32bit",
-            #learning_rate=1e-5,  # Lowered learning rate
-            #lr_scheduler_type="cosine",
-            num_train_epochs=self.config.epochs,  # Increased number of epochs
-            #logging_steps=1  # Log every step
+            per_device_train_batch_size=1,  # Increased batch size if memory allows
+            # gradient_accumulation_steps=4,  # Adjusted gradient accumulation (can uncomment if needed)
+            optim="paged_adamw_32bit",
+            learning_rate=1e-4,  # Increased learning rate for faster convergence
+            num_train_epochs=100,  # Reduced number of epochs
             logging_strategy="epoch",  # Log once per epoch
-            fp16=True,  # Disable mixed precision temporarily
+            fp16=True,  # Mixed precision training
             fp16_opt_level="O2",
-            #gradient_checkpointing=True
+            # gradient_checkpointing=True  # Gradient checkpointing disabled for speed
         )
 
         torch.cuda.empty_cache()
