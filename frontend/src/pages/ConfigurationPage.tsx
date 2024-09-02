@@ -35,7 +35,6 @@ export class ConfigurationPage extends Component<Props, State> {
                 model: "",
                 hfToken: "",
                 maxNewTokens: 4000,
-                messageRegex: "",
                 sourceModel: "",
                 targetModel: "",
                 taskType: "",
@@ -43,7 +42,8 @@ export class ConfigurationPage extends Component<Props, State> {
                 trainMaxLength: 1000,
                 trainOutputDir: "",
                 targetLoss: 0.5,
-                pushToModel: ""
+                pushToModel: "",
+                maxLength: 0
             }
         };
     }
@@ -190,14 +190,13 @@ export class ConfigurationPage extends Component<Props, State> {
                                 value={config.maxNewTokens.toString()}
                             />
                         </Field>
-                        <Field label="Message Regex" size={3}>
+                        <Field label="Max Length" size={1}>
                             <Input
                                 onChange={(e) => {
-                                    const config: Configuration = JSON.parse(JSON.stringify(this.state.config));
-                                    config.messageRegex = e.target.value;
+                                    config.maxLength = Number.parseInt(e.target.value);
                                     this.setState({ config });
                                 }}
-                                value={config.messageRegex}
+                                value={config.maxLength.toString()}
                             />
                         </Field>
                     </Form>

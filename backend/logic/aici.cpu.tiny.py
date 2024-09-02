@@ -1,4 +1,3 @@
-from typing import Optional
 import re
 import os
 import json
@@ -8,123 +7,125 @@ from time import time
 import torch
 from datasets import Dataset, DatasetDict
 from huggingface_hub import login
-from peft import prepare_model_for_kbit_training, get_peft_model, LoraConfig, PeftModel, PeftConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizer, BitsAndBytesConfig, TrainingArguments, TrainerCallback, TrainerState, TrainerControl
+from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizer, TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from trl import SFTTrainer
-import bitsandbytes
 
 from config import Config
 from logic.filehelper import FileHelper
 from model.config_json import ConfigJson
 
+
 class Aici:
-    config: ConfigJson = None
+    config: ConfigJson
     tokenizer: PreTrainedTokenizer = None
     model: AutoModelForCausalLM = None
-    device: torch.device = None
+    device: torch.device
+    sourceModel: AutoModelForCausalLM = None
+    targetModel: AutoModelForCausalLM = None
 
-    def __cleanup(self):
-        print("## Aici.__cleanup()")
-
-        if self.model is not None:
-            del self.model
-        if self.tokenizer is not None:
-            del self.tokenizer
-        if self.config is not None:
-            del self.config
-        if self.device is not None:
-            if(self.device.type == "cuda"):
-                torch.cuda.empty_cache()            
-            del self.device
-
-        gc.collect()
-
-    def __load_config(self):
-        print("## Aici.__load_config()")
-
-        if torch.cuda.is_available():
-            self.device = torch.device("cuda")  # NVIDIA CUDA
-        elif torch.backends.mps.is_available():
-            self.device = torch.device("mps")  # Apple M1/M2 GPUs
-        else:
-            self.device = torch.device("cpu")  # Fallback to CPU
-        
+    def __load_config_json(self):
         with open(Config.config_json, "r") as file:
             contents = file.read()
             self.config = ConfigJson(json.loads(contents))
 
-    def __load_tokenizer(self):
-        print("## Aici.__load_tokenizer()")
-        
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config.model)
-        
-    def __load_model(self, bnbc: Optional[BitsAndBytesConfig] = None):
-        print("## Aici.__load_model()")
-        
-        if bnbc is None:
-            self.model = AutoModelForCausalLM.from_pretrained(
-                self.config.model,
-                device_map="auto",
-                torch_dtype=torch.bfloat16
-            )
-        else:
-            self.model = AutoModelForCausalLM.from_pretrained(
-                self.config.model,
-                device_map="auto",
-                quantization_config=bnbc
-            )
+    def __detect_device(self):
+        # Force CPU usage only
+        self.device = torch.device("cpu")
 
     def __hf_login(self):
-        print("## Aici.__hf_login()")
-
         login(self.config.hf_token)
-        
-    def load(self, bnbc: Optional[BitsAndBytesConfig] = None):
-        print("## Aici.load()")
-        
+
+    def __load_chat_tokenizer(self):
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config.model)
+        self.tokenizer.padding_side = "right"  # Set padding side to right
+
+    def __load_chat_model(self):
+        print(f"\n## Loading Model: {self.config.model}\n")
+
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.config.model,
+            torch_dtype=torch.float32,  # Use float32 since we're on CPU
+            low_cpu_mem_usage=True,
+            attn_implementation='eager'
+        )
+
+        print(f"\n## Loaded Model: {self.config.model}\n")
+
+    def __cleanup(self):
+        print(f"\n## Cleanup\n")
+        if self.model is not None:
+            del self.model
+        if self.tokenizer is not None:
+            del self.tokenizer
+
+        if self.sourceModel is not None:
+            del self.sourceModel
+        if self.targetModel is not None:
+            del self.targetModel
+
+        gc.collect()
+
+    def load(self):
         self.__cleanup()
-       
-        self.__load_config()
+
+        self.__load_config_json()
+        self.__detect_device()
         self.__hf_login()
-        
-        self.__load_tokenizer()
-        self.__load_model(bnbc)
-    
+        self.__load_chat_tokenizer()
+        self.__load_chat_model()
+
     def chat(self, messages):
-        print("## Aici.chat()")
-        
-        inputs = self.tokenizer.apply_chat_template(
-            messages, 
-            return_tensors="pt", 
+        input_ids = self.tokenizer.apply_chat_template(
+            messages,
+            return_tensors="pt",
             return_dict=True,
             add_generation_prompt=True,
-            max_length=self.config.max_length
+            padding=True,
+            truncation=True,
+            max_length=1024
         ).to(self.device)
-        
+
         start_time = time()
-        outputs = self.model.generate(**inputs, max_new_tokens=self.config.max_new_tokens)
+        outputs = self.model.generate(**input_ids, max_new_tokens=self.config.max_new_tokens)
         end_time = time()
-    
-        input_tokens = inputs["input_ids"].size(-1)
-        output_tokens = outputs[0].size(-1)
-        
+
+        input_token_count = input_ids['input_ids'].size(-1)
+        output_token_count = outputs.size(-1)
+
         decoded = self.tokenizer.decode(outputs[0])
-        regex = re.compile("<start_of_turn>([\\w\\W]*?)\\n([\\w\\W]*?)<end_of_turn>")
+        regex = re.compile(self.config.message_regex)
         matches = re.findall(regex, decoded)
         lastMatch = matches[-1]
-        contents = lastMatch[1].strip()
-        
+
         return {
-            "inputTokens": input_tokens,
-            "outputTokens": output_tokens,
+            "inputTokens": input_token_count,
+            "outputTokens": output_token_count,
             "seconds": end_time - start_time,
-            "message": {
-                "role": "assistant", 
-                "content": contents
-            }
+            "message": {"role": "assistant", "content": lastMatch[1].strip()}
         }
-    
+
+    def __load_train_tokenizer(self):
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            self.config.source_model,
+            trust_remote_code=True
+        )
+        self.tokenizer.padding_side = "right"
+
+    def __load_train_model(self):
+        print(f"\n## Loading Model: {self.config.source_model}\n")
+        self.model = AutoModelForCausalLM.from_pretrained(
+            self.config.source_model,
+            device_map={"": "cpu"},  # Force CPU usage
+            low_cpu_mem_usage=True,
+            attn_implementation='eager'
+        )
+        print(f"\n## Loaded Model: {self.config.source_model}\n")
+        self.model.config.use_cache = False
+        self.model.config.pretraining_tp = 1
+
     def __load_dataset(self):
+        self.__load_train_tokenizer()
+
         files = FileHelper().list(Config.datasets_dir, ".ds.json")
 
         messages = []
@@ -182,53 +183,18 @@ class Aici:
         print(f"Longest prompt has {max_token_count} tokens.")
 
         return dataset_dict
-    
-    def train(self):
-        print("## Aici.train()")
-        
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype="float16",
-            bnb_4bit_use_double_quant=True,
-        )
-        
-        self.load(bnb_config)
 
-        self.tokenizer.padding_side = "right"
-
-        self.model.config.use_cache = False
-        self.model.config.pretraining_tp = 1            
-
-        cls = bitsandbytes.nn.Linear4bit
-        lora_modules_names = set()
-        for name, module in self.model.named_modules():
-            if isinstance(module, cls):
-                names = name.split(".")
-                lora_modules_names.add(names[0] if len(names) == 1 else names[-1])
-        if "lm_head" in lora_modules_names:
-            lora_modules_names.remove("lm_head")
-        target_modules = list(lora_modules_names)
-
-        self.peft_config = LoraConfig(
-            lora_alpha=16,
-            lora_dropout=0.05,
-            r=4,
-            bias="none",
-            task_type=self.config.task_type,
-            target_modules=target_modules
-        )
-        self.model = prepare_model_for_kbit_training(self.model)
-        self.model = get_peft_model(self.model, self.peft_config)
-        
-        dataset = self.__load_dataset()
-        
+    def __train_dataset(self, dataset):
         training_arguments = TrainingArguments(
             output_dir=self.config.train_output_dir,
-            num_train_epochs=self.config.epochs,
+            per_device_train_batch_size=1,
+            optim="adamw_hf",  # Updated optimizer
+            learning_rate=1e-4,
+            num_train_epochs=100,
             logging_strategy="epoch",
+            fp16=False,  # Disable mixed precision since we're on CPU
         )
-        
+
         trainer = SFTTrainer(
             model=self.model,
             train_dataset=dataset["train"],
@@ -237,31 +203,46 @@ class Aici:
             max_seq_length=self.config.train_max_length,
             dataset_text_field="input_ids"
         )
-        
+
         trainer.add_callback(EarlyStoppingCallback())
 
-        print("## Starting Training")
+        print("\n## Starting Training\n")
         trainer.train()
-        print("## Finished Training")
+        print("\n## Finished Training\n")
         
-        print("## Starting Merge")
+        print("\n## Starting Merge\n")
         self.model = self.model.merge_and_unload()
-        print("## Finished Merge")
+        print("\n## Finished Merge\n")
 
         epoch_output = f"{self.config.target_model}"
-        print(f"## Saving: {epoch_output}")
+        print(f"\n## Saving: {epoch_output}\n")
         self.tokenizer.save_pretrained(epoch_output)
         self.model.save_pretrained(epoch_output)
-        print(f"## Saved: {epoch_output}")
-                  
-    def push_to_hub(self):
-        print("## Aici.push_to_hub()")
 
+    def train(self):
+        os.environ["WANDB_MODE"] = "offline"
+
+        self.__cleanup()
+        
+        self.__load_config_json()
+        self.__detect_device()
+        self.__hf_login()
+
+        self.__load_train_tokenizer()
+        self.__load_train_model()
+
+        dataset = self.__load_dataset()
+        self.__train_dataset(dataset)
+        
+    def push_to_hub(self):
+        self.__load_config_json()
+        self.__detect_device()
         self.__hf_login()
 
         self.model.push_to_hub(self.config.push_to_model)
         self.tokenizer.push_to_hub(self.config.push_to_model)
-        
+
+
 class EarlyStoppingCallback(TrainerCallback):
     def __init__(self):
         with open(Config.config_json, "r") as file:
@@ -269,13 +250,11 @@ class EarlyStoppingCallback(TrainerCallback):
             self.config = ConfigJson(json.loads(contents))
 
     def on_log(self, args, state: TrainerState, control: TrainerControl, logs=None, **kwargs):
-        print("## EarlyStoppingCallback.on_log()")
         if logs is not None and 'loss' in logs and logs['loss'] <= self.config.target_loss:
             print(f"\n## Early stopping triggered. Loss: {logs['loss']} <= {self.config.target_loss}\n")
             control.should_training_stop = True
 
     def on_step_end(self, args, state: TrainerState, control: TrainerControl, **kwargs):
-        print("## EarlyStoppingCallback.on_step_end()")
         if len(state.log_history) > 0 and state.log_history[-1].get("loss", None) is not None:
             current_loss = state.log_history[-1]["loss"]
             if current_loss <= self.config.target_loss:

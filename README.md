@@ -95,6 +95,28 @@ source ./.venv/bin/activate
 pip install -r requirements.txt 
 ```
 
+Make sure to install your GPU drivers:
+
+```
+sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt update
+sudo apt install -y ubuntu-drivers-common nvidia-cuda-toolkit
+
+lspci -nn | grep -i nvidia
+
+ubuntu-drivers devices
+
+sudo apt-get install nvidia-driver-560
+```
+
+You can open a terminal to the server and use the two following commands to monitor utilization:
+
+```
+watch -n 1 nvidia-smi
+top
+watch -n 1 iostat -h
+```
+
 ## Random Notes
 
 pipx ensurepath

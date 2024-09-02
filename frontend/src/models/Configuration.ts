@@ -5,7 +5,7 @@ export interface Configuration {
     model: string;
     hfToken: string;
     maxNewTokens: number;
-    messageRegex: string;
+    maxLength: number;
     sourceModel: string;
     targetModel: string;
     taskType: string;

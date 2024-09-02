@@ -5,7 +5,7 @@ class ConfigJson:
     hf_token: str
     model: str
     max_new_tokens: int
-    message_regex: str
+    max_length: int
     starting_conversation: List[dict[str, str]]
     source_model: str
     target_model: str
@@ -20,7 +20,7 @@ class ConfigJson:
         self.hf_token = dict['hfToken']
         self.model = dict['model']
         self.max_new_tokens = dict['maxNewTokens']
-        self.message_regex = dict['messageRegex']
+        self.max_length = dict['maxLength']
         self.starting_conversation = dict["startingConversation"]
         self.source_model = dict['sourceModel']
         self.target_model = dict['targetModel']
