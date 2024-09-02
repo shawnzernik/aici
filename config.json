@@ -9,16 +9,16 @@
             "content": "I am a honest, professional, direct, concise programmer."
         }
     ],
-    "model": "~/aici/models/gemma-2-2b-it-poc",
-    "hfToken": "hf_SOMERALLYLONGHUGGINGFACEKEY",
+    "model": "google/gemma-2-2b-it",
+    "hfToken": "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",
     "maxNewTokens": 4000,
-    "messageRegex": "<start_of_turn>([\\w\\W]*?)\\n([\\w\\W]*?)<end_of_turn>",
+    "maxLength": 4000,
     "sourceModel": "google/gemma-2-2b-it",
     "targetModel": "~/aici/models/gemma-2-2b-it-poc",
     "taskType": "CAUSAL_LM",
-    "epochs": 100,
+    "epochs": 1,
     "trainMaxLength": 2500,
     "trainOutputDir": "~/aici/output",
-    "targetLoss": 0.1,
+    "targetLoss": 2.002,
     "pushToModel": "szernik/gemma-2-2b-it-poc"
 }

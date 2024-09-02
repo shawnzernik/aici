@@ -68,7 +68,7 @@ Python setup:
 sudo apt-get update
 sudo apt-get -y upgrade
 sudo apt install -y python3.12-venv
-sudo apt-get install -y python3.12-dev libopenmpi-dev npm
+sudo apt-get install -y python3.12-dev libopenmpi-dev npm python3-pip
 ```
 
 Clone the repo:
@@ -77,7 +77,7 @@ Clone the repo:
 git remote set-url origin https://ghp_SOMESECRETKEYFROMGITHUBHERE@github.com/shawnzernik/aici.git
 ```
 
-You should not have a ```~/aici/``` folder.  Not the path relative to the users folder.
+You should now have a ```~/aici/``` folder.  Not the path relative to the users folder.
 
 Restart the server for NPM to work.  Change to ```frontend``` folder and run:
 
@@ -89,7 +89,7 @@ npm run build
 Change to ```backend``` folder and run:
 
 ```
-pip install --upgrade pip
+sudo pip install --upgrade pip
 python3 -m venv ./.venv
 source ./.venv/bin/activate
 pip install -r requirements.txt 
@@ -107,6 +107,13 @@ lspci -nn | grep -i nvidia
 ubuntu-drivers devices
 
 sudo apt-get install nvidia-driver-560
+```
+
+Not that everything is installed, you should be able to run it:
+
+```
+cd ~/aici/backend
+python3 main.py
 ```
 
 You can open a terminal to the server and use the two following commands to monitor utilization:
