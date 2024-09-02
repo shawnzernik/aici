@@ -71,6 +71,14 @@ sudo apt install -y python3.12-venv
 sudo apt-get install -y python3.12-dev libopenmpi-dev npm
 ```
 
+Clone the repo:
+
+```
+git remote set-url origin https://ghp_SOMESECRETKEYFROMGITHUBHERE@github.com/shawnzernik/aici.git
+```
+
+You should not have a ```~/aici/``` folder.  Not the path relative to the users folder.
+
 Restart the server for NPM to work.  Change to ```frontend``` folder and run:
 
 ```
