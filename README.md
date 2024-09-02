@@ -33,74 +33,58 @@ This is a TypeScript application using Express on the backend, and React on the 
 
 ## Server Setup
 
-Get the Ubuntu server up and running, then use the following commands:
+Get the Ubuntu server up and running, setup the NIC for DHCP:
+
+```
+sudo vi /etc/netplan/50-cloud-init.yaml
+```
+
+With the following contents:
+
+```
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp3s0:
+      dhcp4: yes
+```
+
+Save then run:
+
+```
+sudo netplan apply
+```
+
+Once done, you can see you ip address:
+
+```
+ip address
+```
+
+Python setup:
 
 ```
 sudo apt-get update
 sudo apt-get -y upgrade
-
 sudo apt install -y python3.12-venv
-sudo apt-get install -y python3.12-dev
-sudo apt-get install -y libopenmpi-dev
-
-sudo apt-get install -y npm
-
-sudo apt install -y samba
-sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.original
+sudo apt-get install -y python3.12-dev libopenmpi-dev npm
 ```
 
-Edit ```/etc/samba/smb.conf```
+Restart the server for NPM to work.  Change to ```frontend``` folder and run:
 
 ```
-sudo bash
-echo > /etc/samba/smb.conf
-exit
-sudo vi /etc/samba/smb.conf
+npm install
+npm run build
 ```
 
-Paste the following
+Change to ```backend``` folder and run:
 
 ```
-[global]
-   # identification
-   workgroup = WORKGROUP
-   server string = %h server (Samba, Ubuntu)
-   
-   # logging
-   log file = /var/log/samba/log.%m
-   max log size = 1000
-   logging = file
-
-   panic action = /usr/share/samba/panic-action %d
-
-   # authentication
-   server role = standalone server
-   obey pam restrictions = yes
-
-   # disable guest
-   map to guest = never
-   guest account = nobody
-
-[data]
-   comment = Data Share
-   path = /
-   browseable = yes
-   read only = no
-   guest ok = no
-   valid users = @users
-```
-
-Then run:
-
-```
-sudo useradd --user-group --groups users --shell /usr/sbin/nologin client
-
-sudo passwd client
-
-sudo smbpasswd -a client
-
-sudo systemctl stop smbd nmbd
-sudo systemctl start smbd nmbd
+pip install --upgrade pip
+python3 -m venv ./.venv
+source ./.venv/bin/activate
+pip install -r requirements.txt 
 ```
 
 ## Random Notes
