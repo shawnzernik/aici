@@ -1,3 +1,4 @@
+import multiprocessing
 from typing import Optional
 import re
 import os
@@ -16,6 +17,13 @@ import bitsandbytes
 from config import Config
 from logic.filehelper import FileHelper
 from model.config_json import ConfigJson
+
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+
+num_cpus = multiprocessing.cpu_count()
+os.environ['OMP_NUM_THREADS'] = str(num_cpus)
+os.environ['MKL_NUM_THREADS'] = str(num_cpus)
+torch.set_num_threads(num_cpus)
 
 class Aici:
     config: ConfigJson = None
@@ -65,12 +73,14 @@ class Aici:
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.config.model,
                 device_map="auto",
+                attn_implementation='eager',
                 torch_dtype=torch.bfloat16
             )
         else:
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.config.model,
                 device_map="auto",
+                attn_implementation='eager',
                 quantization_config=bnbc
             )
 
@@ -227,6 +237,10 @@ class Aici:
             output_dir=self.config.train_output_dir,
             num_train_epochs=self.config.epochs,
             logging_strategy="epoch",
+
+            per_device_train_batch_size=1,
+            gradient_accumulation_steps=1,
+            fp16=True,
         )
         
         trainer = SFTTrainer(
@@ -269,15 +283,16 @@ class EarlyStoppingCallback(TrainerCallback):
             self.config = ConfigJson(json.loads(contents))
 
     def on_log(self, args, state: TrainerState, control: TrainerControl, logs=None, **kwargs):
-        print("## EarlyStoppingCallback.on_log()")
         if logs is not None and 'loss' in logs and logs['loss'] <= self.config.target_loss:
-            print(f"\n## Early stopping triggered. Loss: {logs['loss']} <= {self.config.target_loss}\n")
-            control.should_training_stop = True
+                print(f"\n## Early stopping triggered. Loss: {logs['loss']} <= {self.config.target_loss}\n")
+                control.should_training_stop = True
 
     def on_step_end(self, args, state: TrainerState, control: TrainerControl, **kwargs):
-        print("## EarlyStoppingCallback.on_step_end()")
-        if len(state.log_history) > 0 and state.log_history[-1].get("loss", None) is not None:
-            current_loss = state.log_history[-1]["loss"]
-            if current_loss <= self.config.target_loss:
-                print(f"\n## Early stopping triggered. Loss: {current_loss} <= {self.config.target_loss}\n")
-                control.should_training_stop = True
+        if len(state.log_history) > 0:
+            last_log = state.log_history[-1]
+            if last_log.get("loss", None) is not None:
+                current_loss = last_log["loss"]
+                
+                if current_loss <= self.config.target_loss:
+                    print(f"\n## Early stopping triggered. Loss: {current_loss} <= {self.config.target_loss}\n")
+                    control.should_training_stop = True

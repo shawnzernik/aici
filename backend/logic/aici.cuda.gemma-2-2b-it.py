@@ -311,13 +311,27 @@ class EarlyStoppingCallback(TrainerCallback):
             self.config = ConfigJson(json.loads(contents))
 
     def on_log(self, args, state: TrainerState, control: TrainerControl, logs=None, **kwargs):
-        if logs is not None and 'loss' in logs and logs['loss'] <= self.config.target_loss:
-            print(f"\n## Early stopping triggered. Loss: {logs['loss']} <= {self.config.target_loss}\n")
-            control.should_training_stop = True
+        if logs is not None:
+            # Print vital training stats
+            print("\n## Training Stats ##")
+            for key, value in logs.items():
+                print(f"{key}: {value}")
+            
+            # Check for early stopping condition
+            if 'loss' in logs and logs['loss'] <= self.config.target_loss:
+                print(f"\n## Early stopping triggered. Loss: {logs['loss']} <= {self.config.target_loss}\n")
+                control.should_training_stop = True
 
     def on_step_end(self, args, state: TrainerState, control: TrainerControl, **kwargs):
-        if len(state.log_history) > 0 and state.log_history[-1].get("loss", None) is not None:
-            current_loss = state.log_history[-1]["loss"]
-            if current_loss <= self.config.target_loss:
-                print(f"\n## Early stopping triggered. Loss: {current_loss} <= {self.config.target_loss}\n")
-                control.should_training_stop = True
+        if len(state.log_history) > 0:
+            last_log = state.log_history[-1]
+            if last_log.get("loss", None) is not None:
+                current_loss = last_log["loss"]
+                print(f"\n## Step End Stats ##")
+                print(f"Current Loss: {current_loss}")
+                print(f"Learning Rate: {state.lr_scheduler.get_last_lr()}")
+                print(f"Steps: {state.global_step}")
+                
+                if current_loss <= self.config.target_loss:
+                    print(f"\n## Early stopping triggered. Loss: {current_loss} <= {self.config.target_loss}\n")
+                    control.should_training_stop = True
