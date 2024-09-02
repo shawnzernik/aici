@@ -141,3 +141,7 @@ sudo chown -R ubuntu:ubuntu /drive2
 sudo chmod -R 775 /drive2
 mkdir /drive2/huggingface
 mkdir /drive2/smb
+
+
+  git config --global user.email "szernik@ubuntu"
+  git config --global user.name "Shawn Zernik"
