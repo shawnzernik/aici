@@ -31,6 +31,77 @@ This is a TypeScript application using Express on the backend, and React on the 
       - **static/** - static web content served as "/static"
     - **documentation/** - additional documentation
 
+## Server Setup
+
+Get the Ubuntu server up and running, then use the following commands:
+
+```
+sudo apt-get update
+sudo apt-get -y upgrade
+
+sudo apt install -y python3.12-venv
+sudo apt-get install -y python3.12-dev
+sudo apt-get install -y libopenmpi-dev
+
+sudo apt-get install -y npm
+
+sudo apt install -y samba
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.original
+```
+
+Edit ```/etc/samba/smb.conf```
+
+```
+sudo bash
+echo > /etc/samba/smb.conf
+exit
+sudo vi /etc/samba/smb.conf
+```
+
+Paste the following
+
+```
+[global]
+   # identification
+   workgroup = WORKGROUP
+   server string = %h server (Samba, Ubuntu)
+   
+   # logging
+   log file = /var/log/samba/log.%m
+   max log size = 1000
+   logging = file
+
+   panic action = /usr/share/samba/panic-action %d
+
+   # authentication
+   server role = standalone server
+   obey pam restrictions = yes
+
+   # disable guest
+   map to guest = never
+   guest account = nobody
+
+[data]
+   comment = Data Share
+   path = /
+   browseable = yes
+   read only = no
+   guest ok = no
+   valid users = @users
+```
+
+Then run:
+
+```
+sudo useradd --user-group --groups users --shell /usr/sbin/nologin client
+
+sudo passwd client
+
+sudo smbpasswd -a client
+
+sudo systemctl stop smbd nmbd
+sudo systemctl start smbd nmbd
+```
 
 ## Random Notes
 
