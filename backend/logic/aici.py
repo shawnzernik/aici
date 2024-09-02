@@ -7,10 +7,8 @@ from time import time
 import torch
 from datasets import Dataset, DatasetDict
 from huggingface_hub import login
-from peft import prepare_model_for_kbit_training, get_peft_model, LoraConfig, PeftModel, PeftConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizer, BitsAndBytesConfig, TrainingArguments, TrainerCallback, TrainerState, TrainerControl
+from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizer, TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from trl import SFTTrainer
-import bitsandbytes
 
 from config import Config
 from logic.filehelper import FileHelper
@@ -24,7 +22,6 @@ class Aici:
     device: torch.device
     sourceModel: AutoModelForCausalLM = None
     targetModel: AutoModelForCausalLM = None
-    peft_config: LoraConfig = None
 
     def __load_config_json(self):
         with open(Config.config_json, "r") as file:
@@ -32,13 +29,8 @@ class Aici:
             self.config = ConfigJson(json.loads(contents))
 
     def __detect_device(self):
-        if torch.cuda.is_available():
-            self.device = torch.device("cuda")  # NVIDIA CUDA
-            torch.cuda.set_per_process_memory_fraction(0.75)
-        elif torch.backends.mps.is_available():
-            self.device = torch.device("mps")  # Apple M1/M2 GPUs
-        else:
-            self.device = torch.device("cpu")  # Fallback to CPU
+        # Force CPU usage only
+        self.device = torch.device("cpu")
 
     def __hf_login(self):
         login(self.config.hf_token)
@@ -52,15 +44,9 @@ class Aici:
 
         self.model = AutoModelForCausalLM.from_pretrained(
             self.config.model,
-            torch_dtype=torch.float16,
+            torch_dtype=torch.float32,  # Use float32 since we're on CPU
             low_cpu_mem_usage=True,
         )
-
-        if torch.cuda.device_count() > 1:
-            self.model = torch.nn.DataParallel(self.model)
-
-        # Disabled gradient checkpointing for speed
-        # self.model.gradient_checkpointing_enable()
 
         print(f"\n## Loaded Model: {self.config.model}\n")
 
@@ -75,16 +61,11 @@ class Aici:
             del self.sourceModel
         if self.targetModel is not None:
             del self.targetModel
-        if self.peft_config is not None:
-            del self.peft_config
 
-        torch.cuda.empty_cache()
         gc.collect()
 
     def load(self):
         self.__cleanup()
-
-        os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
         self.__load_config_json()
         self.__detect_device()
@@ -98,9 +79,9 @@ class Aici:
             return_tensors="pt",
             return_dict=True,
             add_generation_prompt=True,
-            padding=True,  # Ensure padding
-            truncation=True,  # Ensure truncation
-            max_length=1024  # Adjust max length to match model
+            padding=True,
+            truncation=True,
+            max_length=1024
         ).to(self.device)
 
         start_time = time()
@@ -127,51 +108,18 @@ class Aici:
             self.config.source_model,
             trust_remote_code=True
         )
-        self.tokenizer.padding_side = "right"  # Set padding side to right
+        self.tokenizer.padding_side = "right"
 
     def __load_train_model(self):
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype="float16",
-            bnb_4bit_use_double_quant=True,
-        )
-
         print(f"\n## Loading Model: {self.config.source_model}\n")
         self.model = AutoModelForCausalLM.from_pretrained(
             self.config.source_model,
-            attn_implementation='eager',
-            device_map="auto",
-            quantization_config=bnb_config,
+            device_map={"": "cpu"},  # Force CPU usage
             low_cpu_mem_usage=True,
         )
         print(f"\n## Loaded Model: {self.config.source_model}\n")
         self.model.config.use_cache = False
         self.model.config.pretraining_tp = 1
-
-        # Gradient checkpointing disabled for speed
-        # self.model.gradient_checkpointing_enable()
-
-        cls = bitsandbytes.nn.Linear4bit
-        lora_modules_names = set()
-        for name, module in self.model.named_modules():
-            if isinstance(module, cls):
-                names = name.split(".")
-                lora_modules_names.add(names[0] if len(names) == 1 else names[-1])
-        if "lm_head" in lora_modules_names:
-            lora_modules_names.remove("lm_head")
-        target_modules = list(lora_modules_names)
-
-        self.peft_config = LoraConfig(
-            lora_alpha=16,
-            lora_dropout=0.05,
-            r=4,
-            bias="none",
-            task_type=self.config.task_type,
-            target_modules=target_modules
-        )
-        self.model = prepare_model_for_kbit_training(self.model)
-        self.model = get_peft_model(self.model, self.peft_config)
 
     def __load_dataset(self):
         self.__load_train_tokenizer()
@@ -189,9 +137,9 @@ class Aici:
                     lesson["messages"],
                     return_tensors="pt",
                     return_dict=True,
-                    padding="max_length",  # Ensure padding to max length
+                    padding="max_length",
                     truncation=True,
-                    max_length=self.config.train_max_length  # Ensure consistent max length
+                    max_length=self.config.train_max_length
                 )
 
                 notPadded = self.tokenizer.apply_chat_template(
@@ -202,7 +150,6 @@ class Aici:
 
                 input_ids_length = len(notPadded["input_ids"].squeeze(0).tolist())
 
-                # Check for the longest prompt
                 if input_ids_length > max_token_count:
                     max_token_count = input_ids_length
 
@@ -216,11 +163,10 @@ class Aici:
                     raise ValueError(error_message)
 
                 messages.append({
-                    "input_ids": tokenized["input_ids"].squeeze(0).tolist(),  # Flatten tensor to list
-                    "attention_mask": tokenized["attention_mask"].squeeze(0).tolist()  # Flatten tensor to list
+                    "input_ids": tokenized["input_ids"].squeeze(0).tolist(),
+                    "attention_mask": tokenized["attention_mask"].squeeze(0).tolist()
                 })
 
-        # Validate that all input_ids and attention_mask lists have the same length
         for msg in messages:
             assert len(msg["input_ids"]) == self.config.train_max_length, "Inconsistent input_id length"
             assert len(msg["attention_mask"]) == self.config.train_max_length, "Inconsistent attention_mask length"
@@ -232,7 +178,6 @@ class Aici:
 
         dataset_dict = DatasetDict({"train": dataset})
 
-        # Log the longest prompt and its token count
         print(f"Longest prompt has {max_token_count} tokens.")
 
         return dataset_dict
@@ -240,35 +185,27 @@ class Aici:
     def __train_dataset(self, dataset):
         training_arguments = TrainingArguments(
             output_dir=self.config.train_output_dir,
-            per_device_train_batch_size=1,  # Increased batch size if memory allows
-            # gradient_accumulation_steps=4,  # Adjusted gradient accumulation (can uncomment if needed)
-            optim="paged_adamw_32bit",
-            learning_rate=1e-4,  # Increased learning rate for faster convergence
-            num_train_epochs=100,  # Reduced number of epochs
-            logging_strategy="epoch",  # Log once per epoch
-            fp16=True,  # Mixed precision training
-            fp16_opt_level="O2",
-            # gradient_checkpointing=True  # Gradient checkpointing disabled for speed
+            per_device_train_batch_size=1,
+            optim="adamw_hf",  # Updated optimizer
+            learning_rate=1e-4,
+            num_train_epochs=100,
+            logging_strategy="epoch",
+            fp16=False,  # Disable mixed precision since we're on CPU
         )
-
-        torch.cuda.empty_cache()
 
         trainer = SFTTrainer(
             model=self.model,
             train_dataset=dataset["train"],
             tokenizer=self.tokenizer,
             args=training_arguments,
-            peft_config=self.peft_config,
-            max_seq_length=self.config.train_max_length,  # Use max_seq_length directly
-            dataset_text_field="input_ids"  # Use input_ids directly
+            max_seq_length=self.config.train_max_length,
+            dataset_text_field="input_ids"
         )
 
-        # Add the EarlyStoppingCallback
         trainer.add_callback(EarlyStoppingCallback())
 
         print("\n## Starting Training\n")
         trainer.train()
-        torch.cuda.empty_cache()
         print("\n## Finished Training\n")
         
         print("\n## Starting Merge\n")
