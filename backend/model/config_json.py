@@ -11,7 +11,6 @@ class ConfigJson:
     target_model: str
     task_type: str
     epochs: int
-    train_max_length: int
     train_output_dir: str
     target_loss: float
     push_to_model: str
@@ -26,7 +25,6 @@ class ConfigJson:
         self.target_model = dict['targetModel']
         self.task_type = dict["taskType"]
         self.epochs = dict["epochs"]
-        self.train_max_length = dict["trainMaxLength"]
         self.train_output_dir = dict["trainOutputDir"]
         self.target_loss = dict["targetLoss"]
         self.push_to_model = dict["pushToModel"]

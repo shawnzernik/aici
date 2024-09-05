@@ -1,0 +1,50 @@
+{
+    "guid": "20b0c721-a942-466b-a9df-33a6f761ca2f",
+    "title": "ts-react-express/backend/src",
+    "lessons": [
+        {
+            "guid": "37251d69-8dd4-4429-92c3-b3edab2ce7a0",
+            "title": "Config.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/Config.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport process from \"process\"\n\nexport class Config {\n\tpublic static javascriptDirectory = process.env.JAVASCRIPT_DIR || \"../frontend/dist\";\n\tpublic static staticDirectory = process.env.STATIC_DIR || \"../frontend/static\";\n\t\n\tpublic static httpsPort = Number.parseInt(process.env.HTTPS_PORT || \"4433\");\n\tpublic static httpsCertPath = process.env.HTTPS_CERT_PATH || \"./server.cert\"\n\tpublic static httpsKeyPath = process.env.HTTPS_CERT_KEY || \"./server.key\"\n\t\n\tpublic static dbHost = process.env.DB_HOST || \"localhost\";\n\tpublic static dbPort = Number.parseInt(process.env.DB_PORT || \"5432\");\n\tpublic static dbName = process.env.DB_NAME || \"postgres\";\n\tpublic static dbUsername = process.env.DB_USERNAME || \"postgres\";\n\tpublic static dbPassword = process.env.DB_PASSWORD || \"password\";\n\t\n\tpublic static jwtPublicKeyFile = process.env.JWT_PUBLIC_KEY_FILE || \"../frontend/static/public.key\"\n\tpublic static jwtPrivateKeyFile = process.env.JWT_PUBLIC_KEY_FILE || \"./private.key\"\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "994c528d-b918-4622-8eb6-a8185fee4ead",
+            "title": "index.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/index.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { Config } from \"./Config\"\nimport fs from \"fs\";\nimport https from \"https\";\nimport { ResponseDto } from \"common/src/models/ResponseDto\"\n\nclass WebApp {\n\tprivate app: express.Express = express();\n\tpublic execute() {\n\t\tthis.app.use(express.json());\n\t\tthis.app.use(\"/static\", express.static(Config.staticDirectory));\n\t\tthis.app.use(\"/scripts\", express.static(Config.javascriptDirectory));\n\n\t\tthis.app.get(\"/api/v0/health\", this.getHealth.bind(this));\n\t\tthis.app.get(\"/api/v0/liveness\", this.getLiveliness.bind(this));\n\n\t\tconst options = {\n\t\t\tkey: fs.readFileSync(Config.httpsCertPath),\n\t\t\tcert: fs.readFileSync(Config.httpsKeyPath),\n\t\t};\n\t\tconst server = https.createServer(options, this.app);\n\t\tserver.listen(Config.httpsPort, () => {\n\t\t\tconsole.log(`Server listening on port ${Config.httpsPort}`);\n\t\t});\n\t}\n\n\tpublic getHealth(req: express.Request, res: express.Response) {\n\t\tres.status(200).send({ data: \"OK\" } as ResponseDto<string>)\n\t}\n\n\tpublic getLiveliness(req: express.Request, res: express.Response) {\n\t\tres.status(200).send({ data: \"OK\" } as ResponseDto<string>)\n\t}\n}\n\nconst app = new WebApp();\napp.execute();\n```"
+                }
+            ]
+        }
+    ]
+}

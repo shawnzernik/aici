@@ -19,7 +19,7 @@ interface Props {
     alert: (alert: Alert) => void;
     loading: (show: boolean) => void;
     shared: Dictionary<string>;
-    setShared: (dic: Dictionary<string>, callback: (()=> void) | undefined) => void;
+    setShared: (dic: Dictionary<string>, callback: (() => void) | undefined) => void;
     setActive: (name: string) => void;
 }
 
@@ -253,7 +253,7 @@ Create a title for the conversation history.  Keep it to 10 words or less.`
     }
     private resendMessages(index: number) {
         const messages: Message[] = [];
-        for(let cnt: number = 0; cnt < this.state.lesson.messages.length && cnt <= index; cnt++)
+        for (let cnt: number = 0; cnt < this.state.lesson.messages.length && cnt <= index; cnt++)
             messages.push(JSON.parse(JSON.stringify(this.state.lesson.messages[cnt])));
 
         const newShared: Dictionary<string> = JSON.parse(JSON.stringify(this.props.shared));
@@ -282,7 +282,7 @@ Create a title for the conversation history.  Keep it to 10 words or less.`
                 <p
                     style={{ color: Theme.LightText, cursor: "pointer" }}
                     onClick={() => { this.setState({ lesson: lesson }); }}
-                > {lesson.title}</p >
+                > {lesson.title} ( {Math.round(JSON.stringify(lesson.messages).length / 4)} )</p >
             );
         });
 
@@ -349,7 +349,7 @@ Create a title for the conversation history.  Keep it to 10 words or less.`
                 conversation.push(<div style={Theme.Buttons}>
                     <button style={Theme.Button} onClick={this.resendMessages.bind(this, index)}>Resend</button>
                     <button style={Theme.Button} onClick={this.deleteMessage.bind(this, index)}>Delete Row</button>
-                    </div>);
+                </div>);
             });
         }
 

@@ -7,3 +7,5 @@ index.js
 dist
 .idea
 package-lock.json
+llms
+output

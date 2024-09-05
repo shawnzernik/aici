@@ -1,0 +1,28 @@
+{
+    "guid": "fd78537a-2907-4e80-8210-3a0225f65a70",
+    "title": "ts-react-express/postgres",
+    "lessons": [
+        {
+            "guid": "9cc47336-5723-43ca-9b89-6933f29a047f",
+            "title": "create.sh",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: postgres/create.sh"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\n#! /bin/sh\n\nrm -R ./data\nmkdir data\n\npodman run \\\n    --name postgres \\\n    -e POSTGRES_USER=postgres \\\n    -e POSTGRES_PASSWORD=postgres \\\n    -e POSTGRES_DB=postgres \\\n    -p 5432:5432 \\\n    -v $(pwd)/data:/var/lib/postgresql/data -d postgres\n```"
+                }
+            ]
+        }
+    ]
+}

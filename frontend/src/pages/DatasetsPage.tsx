@@ -43,7 +43,7 @@ export class DatasetsPage extends React.Component<Props, State> {
         let loaded = 0;
         DatasetsService.list()
             .then((ret) => {
-                this.setState({ datasets: ret }, () => {
+                this.setState({ datasets: ret.sort() }, () => {
                     loaded++;
                     if (loaded >= 2)
                         this.props.loading(false);
@@ -54,7 +54,7 @@ export class DatasetsPage extends React.Component<Props, State> {
             });
         SuggestionsService.list()
             .then((ret) => {
-                this.setState({ suggestions: ret }, () => {
+                this.setState({ suggestions: ret.sort() }, () => {
                     loaded++;
                     if (loaded >= 2)
                         this.props.loading(false);

@@ -1,0 +1,28 @@
+{
+    "guid": "127401fe-6576-4b43-9afd-1776ec59b9ca",
+    "title": "ts-react-express/frontend/static",
+    "lessons": [
+        {
+            "guid": "c1bfc013-7665-4350-8138-b794af580b50",
+            "title": "index.html",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: frontend/static/index.html"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\n<!DOCTYPE html>\n<html>\n\n<head>\n\t<meta charset=\"utf-8\" />\n\t<title>Getting Started</title>\n\t<script src=\"https://unpkg.com/lodash@4.17.20\"></script>\n</head>\n\n<body>\n\t<div id=\"root\" />\n\t<script src=\"./src/index.js\"></script>\n</body>\n\n</html>\n```"
+                }
+            ]
+        }
+    ]
+}

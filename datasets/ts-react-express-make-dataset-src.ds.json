@@ -1,0 +1,138 @@
+{
+    "guid": "7f25366d-9883-49f5-bf60-6c2b56c306db",
+    "title": "ts-react-express/make-dataset/src",
+    "lessons": [
+        {
+            "guid": "de91c378-e23c-44f6-8b9d-87a1872cda4e",
+            "title": "Dataset.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: make-dataset/src/Dataset.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport { Lesson } from \"./Lesson\";\n\nexport interface Dataset {\n    guid: string;\n    title: string;\n    lessons: Lesson[];\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "286a750f-a5ce-46b5-94b8-b94a5f139822",
+            "title": "Dictionary.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: make-dataset/src/Dictionary.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nexport type Dictionary<T> = { [key: string]: T; };\n```"
+                }
+            ]
+        },
+        {
+            "guid": "37406bd6-818b-423f-b63a-675ebd7ebfd3",
+            "title": "Lesson.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: make-dataset/src/Lesson.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport { Message } from \"./Message\";\n\nexport interface Lesson {\n    guid: string;\n    title: string;\n    messages: Message[];\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "495d754e-2409-4cca-92e3-a4e044650a3a",
+            "title": "Message.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: make-dataset/src/Message.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nexport interface Message {\n    role: string;\n    content: string;\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "5184c0d7-39ba-4724-ba80-448002f7fb99",
+            "title": "UUIDv4.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: make-dataset/src/UUIDv4.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nexport class UUIDv4 {\n    public static generate(): string {\n        const randomBytes = new Uint8Array(16);\n        crypto.getRandomValues(randomBytes);\n\n        randomBytes[6] = (randomBytes[6] & 0x0f) | 0x40;\n        randomBytes[8] = (randomBytes[8] & 0x3f) | 0x80;\n\n        const uuid = Array.from(randomBytes).map((byte, index) => {\n            const hex = byte.toString(16).padStart(2, \"0\");\n            if (index === 4 || index === 6 || index === 8 || index === 10)\n                return \"-\" + hex;\n\n            return hex;\n        }).join(\"\");\n\n        return uuid;\n    }\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "a92f8b05-a949-498f-bdaa-562ac57ec134",
+            "title": "index.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: make-dataset/src/index.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport fs from \"fs\";\nimport { Dictionary } from \"./Dictionary\";\nimport path from \"path\";\nimport { Dataset } from \"./Dataset\";\nimport { UUIDv4 } from \"./UUIDv4\";\nimport { Lesson } from \"./Lesson\";\n\nclass Program {\n    private static projectName = \"ts-react-express\";\n    private datasets: Dictionary<Dictionary<string>> = {};\n\n    public execute() {\n        const files = this.getFiles();\n\n        files.forEach((f) => {\n            const dir = path.dirname(f);\n            const file = path.basename(f);\n\n            if (!this.datasets[dir])\n                this.datasets[dir] = {};\n\n            console.log(\"Reading - Dir: \" + dir + \"; File: \" + file);\n\n            const contents = fs.readFileSync(\"../\" + f, { encoding: \"utf8\" });\n            this.datasets[dir][file] = contents;\n        });\n        // files.forEach((f) => {\n        //     console.log(\"Reading - File: \" + f);\n\n        //     const contents = fs.readFileSync(\"../\" + f, { encoding: \"utf8\" });\n        //     const bracket = Math.floor((contents.length / 4) / 100);\n\n        //     if(!this.datasets[bracket])\n        //         this.datasets[bracket] = {};\n\n        //     this.datasets[bracket][f] = contents;\n        // });\n\n\n        Object.keys(this.datasets).forEach((dir) => {\n            const ds: Dataset = {\n                guid: UUIDv4.generate(),\n                title: Program.projectName + \"/\" + dir,\n                lessons: []\n            };\n            Object.keys(this.datasets[dir]).forEach((file) => {\n                const lesson: Lesson = {\n                    guid: UUIDv4.generate(),\n                    title: file,\n                    messages: [\n                        {\n                            \"role\": \"user\",\n                            \"content\": \"You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers.\"\n                        },\n                        {\n                            \"role\": \"assistant\",\n                            \"content\": \"I am a honest, professional, direct, concise programmer.\"\n                        }\n                    ]\n                };\n\n                lesson.messages.push({\n                    \"role\": \"user\",\n                    \"content\": `Please provide me the following file:\\n\\n- Project: ${Program.projectName}\\n- File name: ${dir + \"/\" + file}`\n                });\n                lesson.messages.push({\n                    \"role\": \"assistant\",\n                    \"content\": \"```\\n\" + this.datasets[dir][file] + \"\\n```\"\n                });\n\n                ds.lessons.push(lesson);\n            });\n\n            if (!fs.existsSync(\"datasets\"))\n                fs.mkdirSync(\"datasets\");\n\n            const name = this.sanitizeString(Program.projectName + \" \" + dir);\n            fs.writeFileSync(\"datasets/\" + name + \".ds.json\", JSON.stringify(ds, null, 4));\n        });\n    }\n    private sanitizeString(input: string): string {\n        let sanitized = input.replace(/[^a-zA-Z0-9]/g, '-');\n        sanitized = sanitized.replace(/-+/g, '-');\n        sanitized = sanitized.replace(/^-+|-+$/g, '');\n\n        return sanitized.toLowerCase().trim();\n    }\n    private getFiles(): string[] {\n        const ret: string[] = [];\n\n        const files = fs.readdirSync(\"../\", { recursive: true, encoding: \"utf8\" });\n        files.forEach((f: string) => {\n            if (\n                (\n                    f.endsWith(\".ts\") ||\n                    f.endsWith(\".sql\") ||\n                    f.endsWith(\".json\") ||\n                    f.endsWith(\".sh\") ||\n                    f.endsWith(\".js\") ||\n                    f.endsWith(\".html\") ||\n                    f.endsWith(\".md\")\n                ) &&\n                !f.includes(\"node_modules\") && !f.includes(\"bin\") &&\n                !f.includes(\"obj\") && !f.includes(\"dist\") && !f.includes(\"coverage\") && \n                !f.includes(\"package-lock\") && !f.includes(\".ds.json\")\n            )\n                ret.push(f);\n        })\n\n        return ret;\n    }\n}\n\nconst program = new Program();\nprogram.execute();\n```"
+                }
+            ]
+        }
+    ]
+}

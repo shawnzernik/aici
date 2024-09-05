@@ -1,0 +1,72 @@
+{
+    "guid": "9ec7f37a-3aac-4d1e-817f-95330e183ead",
+    "title": "ts-react-express/common/src/tests",
+    "lessons": [
+        {
+            "guid": "c62ce427-5d83-4bd5-9aaa-6f41aca86ef0",
+            "title": "JwtToken.test.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: common/src/tests/JwtToken.test.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport fs from \"fs\";\nimport { JwtToken } from \"../logic/JwtToken\";\n\nconst privateKeyFileContents = fs.readFileSync(\"../backend/private.key\", { encoding: \"utf8\" });\nconst publicKeyFileContents = fs.readFileSync(\"../frontend/static/public.key\", { encoding: \"utf8\" });\n\ntest(\"jwt tokens\", () => {\n    const jwt = new JwtToken({user: \"shawn@localhost\", name: \"Shawn Zernik\"});\n    const token = jwt.sign(privateKeyFileContents);\n    const newJwt = JwtToken.verify(token, publicKeyFileContents);\n\n    expect(newJwt).toBeTruthy();\n});\n```"
+                }
+            ]
+        },
+        {
+            "guid": "175df97b-31f1-4cd8-83bb-a7f29c2da0a2",
+            "title": "jsonwebtoken.test.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: common/src/tests/jsonwebtoken.test.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport fs from \"fs\";\nimport * as jwt from \"jsonwebtoken\";\nimport { UUIDv4 } from \"../logic/UUIDv4\";\n\ndescribe(\"jsonwebtoken\", () => {\n    const privateKeyFileContents = fs.readFileSync(\"../backend/private.key\", { encoding: \"utf8\" });\n    const publicKeyFileContents = fs.readFileSync(\"../frontend/static/public.key\", { encoding: \"utf8\" });\n    \n    it(\"should make a JWT token\", () => {\n        const token = jwt.sign(\n            {\n                user: \"shawn@localhost\", \n                name: \"Shawn Zernik\"\n            }, \n            privateKeyFileContents,\n            { \n                expiresIn: \"1h\", \n                audience: \"lagoviatatech.com\",\n                algorithm: \"RS512\",\n                issuer: \"lagovistatech.com\",\n                subject: \"user\",\n                //notBefore: Math.round(Date.now() / 1000),\n                jwtid: \"BEADBEEFBEADBEEFBEADBEEFBEADBEEF\"\n            }\n        );\n\n        console.log(\"Token: \" + token);        \n        expect(token).toBeTruthy();\n    });\n\n    it(\"should signed and verify\", () => {\n        const token = jwt.sign(\n            { data: {\n                user: \"shawn@localhost\", \n                name: \"Shawn Zernik\"\n            }}, \n            privateKeyFileContents,\n            { \n                expiresIn: \"1h\", \n                audience: \"lagoviatatech.com\",\n                algorithm: \"RS512\",\n                issuer: \"lagovistatech.com\",\n                subject: \"user\",\n                // notBefore: Math.round(Date.now() / 1000) - 5,\n                jwtid: UUIDv4.generate()\n            }\n        );\n\n        const ret = jwt.verify(token, publicKeyFileContents);\n\n        console.log(\"Verified: \" + JSON.stringify(ret, null, 4));\n\n        expect(ret).toBeTruthy();\n    });\n});\n```"
+                }
+            ]
+        },
+        {
+            "guid": "d1b84e09-efbe-432d-ab95-045855b277aa",
+            "title": "sanity.test.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: common/src/tests/sanity.test.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\ntest(\"Sanity\", () => {\n\texpect(true).toBe(true);\n});\n```"
+                }
+            ]
+        }
+    ]
+}

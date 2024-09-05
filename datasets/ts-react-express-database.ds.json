@@ -1,0 +1,28 @@
+{
+    "guid": "4bb91d29-1c98-48b4-9e3a-9d4b2a117d59",
+    "title": "ts-react-express/database",
+    "lessons": [
+        {
+            "guid": "9465d0a3-8787-4795-bcac-c5f253fbb378",
+            "title": "0.0.0.sh",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: database/0.0.0.sh"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\n#! /bin/bash\n\nDB_HOST=\"localhost\"\nDB_PORT=\"5432\"\nDB_NAME=\"ts-react-express\"\nDB_USER=\"postgres\"\nDB_PASSWORD=\"postgres\"\n\nexport PGPASSWORD=\"$DB_PASSWORD\"\n\necho \"DROP DATABASE IF EXISTS \\\"$DB_NAME\\\"\"\npsql -h \"$DB_HOST\" -p \"$DB_PORT\" -U \"$DB_USER\" -c \"DROP DATABASE IF EXISTS \\\"$DB_NAME\\\";\" -q\n\necho \"CREATE DATABASE \\\"$DB_NAME\\\"\"\npsql -h \"$DB_HOST\" -p \"$DB_PORT\" -U \"$DB_USER\" -c \"CREATE DATABASE \\\"$DB_NAME\\\";\" -q\n\nSQL_FILES=(\n    \"tables/groups.sql\"\n    \"tables/memberships.sql\"\n    \"tables/passwords.sql\"\n    \"tables/permissions.sql\"\n    \"tables/securables.sql\"\n    \"tables/users.sql\"\n    \"foreignkeys/memberships.sql\"\n    \"foreignkeys/passwords.sql\"\n    \"foreignkeys/permissions.sql\"\n    \"data/securables.sql\"\n)\n\nfor SQL_FILE in \"${SQL_FILES[@]}\"; do\n    echo \"psql -f \\\"$SQL_FILE\\\"\"\n    psql -h \"$DB_HOST\" -p \"$DB_PORT\" -d \"$DB_NAME\" -U \"$DB_USER\" -f \"$SQL_FILE\" -q\n    if [ $? -ne 0 ]; then\n        echo \"Failed to execute SQL script: $SQL_FILE\"\n        exit 1\n    fi\ndone\n\n```"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,72 @@
+{
+    "guid": "c69d92bd-3eff-4cf6-a8db-1e1cd8482f95",
+    "title": "ts-react-express/common/src/logic",
+    "lessons": [
+        {
+            "guid": "d55367bb-6217-4b81-8463-3d314af33616",
+            "title": "CopyInterface.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: common/src/logic/CopyInterface.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nexport interface CopyInterface<T> {\n\tcopyFrom(source: T): void;\n\tcopyTo(dest: T): void;\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "e24f9bb4-6aab-4814-b244-67ad705060cf",
+            "title": "JwtToken.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: common/src/logic/JwtToken.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport * as jwt from 'jsonwebtoken';\nimport { UUIDv4 } from './UUIDv4';\n\nexport class JwtToken implements jwt.JwtPayload {\n    public static expiresIn = \"1h\";\n    public static audience = \"lagovistatech.com\";\n    public static issuer = \"lagovistatech.com\";\n    public static subject = \"jwt_token\";\n    public static algorithm: \"RS512\" = \"RS512\";\n\n    public data: any;\n    \n    public constructor(data: any = undefined) {\n        this.data = data;\n    }\n\n    public sign(privateKey: string): string {\n        const ret = jwt.sign({ data: this.data }, privateKey, {\n                expiresIn: JwtToken.expiresIn, \n                audience: JwtToken.audience,\n                issuer: JwtToken.issuer,\n                subject: JwtToken.subject,\n                algorithm: JwtToken.algorithm,\n                jwtid: UUIDv4.generate()\n            }\n        );\n\n        return ret;\n    }\n    public static verify(token: string, publicKey: string) {\n        const obj = jwt.verify(token, publicKey);\n        \n        const ret = new JwtToken();\n        Object.assign(ret, obj);\n        \n        return ret;        \n    }\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "3ea9dd6a-0eca-4316-8397-7f10aad2146b",
+            "title": "UUIDv4.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: common/src/logic/UUIDv4.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nexport class UUIDv4 {\n    public static generate(): string {\n        const randomBytes = new Uint8Array(16);\n        crypto.getRandomValues(randomBytes);\n\n        randomBytes[6] = (randomBytes[6] & 0x0f) | 0x40;\n        randomBytes[8] = (randomBytes[8] & 0x3f) | 0x80;\n\n        const uuid = Array.from(randomBytes).map((byte, index) => {\n            const hex = byte.toString(16).padStart(2, \"0\");\n            if (index === 4 || index === 6 || index === 8 || index === 10)\n                return \"-\" + hex;\n\n            return hex;\n        }).join(\"\");\n\n        return uuid;\n    }\n}\n```"
+                }
+            ]
+        }
+    ]
+}

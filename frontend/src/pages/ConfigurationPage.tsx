@@ -39,7 +39,6 @@ export class ConfigurationPage extends Component<Props, State> {
                 targetModel: "",
                 taskType: "",
                 epochs: 0,
-                trainMaxLength: 1000,
                 trainOutputDir: "",
                 targetLoss: 0.5,
                 pushToModel: "",
@@ -237,15 +236,6 @@ export class ConfigurationPage extends Component<Props, State> {
                                     this.setState({ config });
                                 }}
                                 value={config.epochs.toString()}
-                            />
-                        </Field>
-                        <Field label="Max Length" size={1}>
-                            <Input
-                                onChange={(e) => {
-                                    config.trainMaxLength = Number.parseInt(e.target.value);
-                                    this.setState({ config });
-                                }}
-                                value={config.trainMaxLength.toString()}
                             />
                         </Field>
                         <Field label="Output Dir" size={2}>

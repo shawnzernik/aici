@@ -10,7 +10,6 @@ export interface Configuration {
     targetModel: string;
     taskType: string;
     epochs: number;
-    trainMaxLength: number;
     trainOutputDir: string;
     targetLoss: number;
     pushToModel: string;

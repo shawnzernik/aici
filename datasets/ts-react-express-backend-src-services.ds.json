@@ -1,0 +1,204 @@
+{
+    "guid": "78cdf814-d66b-4bf9-9b9d-098aa2391c5a",
+    "title": "ts-react-express/backend/src/services",
+    "lessons": [
+        {
+            "guid": "4c81b5e1-9d57-4b28-a146-2b00ff27dbcc",
+            "title": "AuthService.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/AuthService.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { EntitiesDataSource } from \"../data/EntitiesDataSource\";\nimport { BaseService } from \"./BaseService\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\n\nexport class AuthService extends BaseService {\n\tpublic constructor(app: express.Express) {\n\t\tsuper();\n\n\t\tapp.post(\"/api/v0/auth/login\", (req, resp) => { this.methodWrapper(req, resp, this.postLogin) });\n\t\tapp.post(\"/api/v0/auth/renew\", (req, resp) => { this.methodWrapper(req, resp, this.postRenew) });\n\t}\n\n\tpublic async postLogin(req: express.Request, ds: EntitiesDataSource): Promise<GroupDto | null> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\treturn await ds.groupRepository().findOneBy({ guid: guid });\n\t}\n\tpublic async postRenew(req: express.Request, ds: EntitiesDataSource): Promise<GroupDto | null> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\treturn await ds.groupRepository().findOneBy({ guid: guid });\n\t}\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "07add76d-3952-4b49-af18-6902f0735cf8",
+            "title": "BaseService.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/BaseService.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { HttpStatus } from \"common/src/models/HttpStatus\"\nimport { ResponseDto } from \"common/src/models/ResponseDto\";\nimport { EntitiesDataSource } from \"../data/EntitiesDataSource\";\n\nexport type Method<T> = (req: express.Request, ds: EntitiesDataSource) => Promise<T>;\n\nexport class BaseService {\n\tpublic async methodWrapper<T>(req: express.Request, resp: express.Response, method: Method<T>): Promise<void> {\n\t\tconst ds = new EntitiesDataSource();\n\n\t\ttry {\n\t\t\tawait ds.initialize();\n\t\t\tconst ret = await method(req, ds);\n\t\t\tresp.status(HttpStatus.OK).send({ data: ret } as ResponseDto<any>);\n\t\t} catch (err) {\n\t\t\tresp.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ err: JSON.stringify(err) } as ResponseDto<any>);\n\t\t} finally {\n\t\t\tawait ds.destroy();\n\t\t}\n\t}\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "6e4d0713-b230-43e4-bdf5-4848c12ae788",
+            "title": "CheckSecurity.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/CheckSecurity.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport { ResponseDto } from \"common/src/models/ResponseDto\";\nimport express from \"express\";\n\nexport function CheckSecurity(securableName: string) {\n    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {\n        const originalMethod = descriptor.value;\n\n        descriptor.value = async function (req: express.Request, resp: express.Response, ...args: any[]) {\n            const authHeader = req.headers[\"authorization\"];\n            const authToken = authHeader && authHeader.split(\" \")[1];\n\n            if (!authToken)\n                return resp.status(401).json({ error: \"Unauthorized: Missing token\" } as ResponseDto<any>);\n\n            const isAuthenticated = await checkAuthentication(authToken);\n            if (!isAuthenticated)\n                return resp.status(401).json({ error: \"Unauthorized: Invalid token\" } as ResponseDto<any>);\n\n            const hasPermission = await checkAuthorization(authToken, securableName);\n            if (!hasPermission)\n                return resp.status(403).json({ message: \"Forbidden: Insufficient permissions\" });\n\n            return originalMethod.apply(this, [req, resp, ...args]);\n        };\n\n        return descriptor;\n    };\n}\n\nasync function checkAuthentication(token: string): Promise<boolean> {\n    return true;\n}\n\nasync function checkAuthorization(token: string, securableName: string): Promise<boolean> {\n    return true;\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "9aef6a82-ab18-4e98-9d8a-65263c7f5f8d",
+            "title": "GroupService.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/GroupService.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { EntitiesDataSource } from \"../data/EntitiesDataSource\";\nimport { BaseService } from \"./BaseService\";\nimport { GroupDto } from \"common/src/models/GroupDto\";\nimport { GroupEntity } from \"../data/GroupEntity\";\nimport { CheckSecurity } from \"./CheckSecurity\";\n\nexport class GroupService extends BaseService {\n\tpublic constructor(app: express.Express) {\n\t\tsuper();\n\n\t\tapp.get(\"/api/v0/groups\", (req, resp) => { this.methodWrapper(req, resp, this.getList) });\n\t\tapp.put(\"/api/v0/group\", (req, resp) => { this.methodWrapper(req, resp, this.putSave) });\n\t\tapp.delete(\"/api/v0/group/:guid\", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });\n\t}\n\n\t@CheckSecurity(\"Group:Read\")\n\tpublic async getGuid(req: express.Request, ds: EntitiesDataSource): Promise<GroupDto | null> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\treturn await ds.groupRepository().findOneBy({ guid: guid });\n\t}\n\n\t@CheckSecurity(\"Group:List\")\n\tpublic async getList(req: express.Request, ds: EntitiesDataSource): Promise<GroupDto[]> {\n\t\treturn await ds.groupRepository().find();\n\t}\n\n\t@CheckSecurity(\"Group:Save\")\n\tpublic async putSave(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst entity = new GroupEntity();\n\t\tentity.copyFrom(req.body as GroupDto);\n\n\t\tawait ds.groupRepository().save([entity]);\n\t}\n\n\t@CheckSecurity(\"Group:Delete\")\n\tpublic async deleteGuid(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\tawait ds.groupRepository().delete({ guid: guid });\n\t}\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "aa0eaa28-ede5-45be-bcfb-d938e1d5ea83",
+            "title": "MembershipService.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/MembershipService.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { EntitiesDataSource } from \"../data/EntitiesDataSource\";\nimport { MembershipEntity } from \"../data/MembershipEntity\";\nimport { BaseService } from \"./BaseService\";\n\nexport type Method<T> = (req: express.Request, ds: EntitiesDataSource) => Promise<T>;\n\nexport class MembershipService extends BaseService {\n\tpublic constructor(app: express.Express) {\n\t\tsuper();\n\n\t\tapp.get(\"/api/v0/membership/:guid\", (req, resp) => { this.methodWrapper(req, resp, this.getGuid) });\n\t\tapp.get(\"/api/v0/memberships\", (req, resp) => { this.methodWrapper(req, resp, this.getList) });\n\t\tapp.put(\"/api/v0/membership\", (req, resp) => { this.methodWrapper(req, resp, this.putSave) });\n\t\tapp.delete(\"/api/v0/membership/:guid\", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });\n\t}\n\n\tpublic async getGuid(req: express.Request, ds: EntitiesDataSource): Promise<MembershipEntity | null> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\treturn await ds.membershipRepository().findOneBy({ guid: guid });\n\t}\n\n\tpublic async getList(req: express.Request, ds: EntitiesDataSource): Promise<MembershipEntity[]> {\n\t\treturn await ds.membershipRepository().find();\n\t}\n\n\tpublic async putSave(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst entity = new MembershipEntity();\n\t\tentity.copyFrom(req.body as MembershipEntity);\n\n\t\tawait ds.membershipRepository().save([entity]);\n\t}\n\n\tpublic async deleteGuid(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\tawait ds.membershipRepository().delete({ guid: guid });\n\t}\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "05416d27-4e86-48a3-ac48-6d00c6239b78",
+            "title": "PasswordService.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/PasswordService.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { EntitiesDataSource } from \"../data/EntitiesDataSource\";\nimport { BaseService } from \"./BaseService\";\nimport { PasswordDto } from \"common/src/models/PasswordDto\";\nimport { PasswordEntity } from \"../data/PasswordEntity\";\nimport { CheckSecurity } from \"./CheckSecurity\";\n\nexport class PasswordService extends BaseService {\n\tpublic constructor(app: express.Express) {\n\t\tsuper();\n\n\t\tapp.get(\"/api/v0/passwords\", (req, resp) => { this.methodWrapper(req, resp, this.getList) });\n\t\tapp.put(\"/api/v0/password\", (req, resp) => { this.methodWrapper(req, resp, this.putSave) });\n\t\tapp.delete(\"/api/v0/password/:guid\", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });\n\t}\n\n\t@CheckSecurity(\"Password:List\")\n\tpublic async getList(req: express.Request, ds: EntitiesDataSource): Promise<PasswordDto[]> {\n\t\treturn await ds.passwordRepository().find();\n\t}\n\n\t@CheckSecurity(\"Password:Save\")\n\tpublic async putSave(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst entity = new PasswordEntity();\n\t\tentity.copyFrom(req.body as PasswordDto);\n\n\t\tawait ds.passwordRepository().save([entity]);\n\t}\n\n\t@CheckSecurity(\"Password:Delete\")\n\tpublic async deleteGuid(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\tawait ds.passwordRepository().delete({ guid: guid });\n\t}\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "559c3430-4a2b-4406-81c2-b1ca4d4d66c7",
+            "title": "PermissionService.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/PermissionService.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { EntitiesDataSource } from \"../data/EntitiesDataSource\";\nimport { BaseService } from \"./BaseService\";\nimport { PermissionDto } from \"common/src/models/PermissionDto\";\nimport { PermissionEntity } from \"../data/PermissionEntity\";\nimport { CheckSecurity } from \"./CheckSecurity\";\n\nexport class PermissionService extends BaseService {\n\tpublic constructor(app: express.Express) {\n\t\tsuper();\n\n\t\tapp.get(\"/api/v0/permissions\", (req, resp) => { this.methodWrapper(req, resp, this.getList) });\n\t\tapp.put(\"/api/v0/permission\", (req, resp) => { this.methodWrapper(req, resp, this.putSave) });\n\t\tapp.delete(\"/api/v0/permission/:guid\", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });\n\t}\n\n\t@CheckSecurity(\"Permission:List\")\n\tpublic async getList(req: express.Request, ds: EntitiesDataSource): Promise<PermissionDto[]> {\n\t\treturn await ds.permissionRepository().find();\n\t}\n\n\t@CheckSecurity(\"Permission:Save\")\n\tpublic async putSave(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst entity = new PermissionEntity();\n\t\tentity.copyFrom(req.body as PermissionDto);\n\n\t\tawait ds.permissionRepository().save([entity]);\n\t}\n\n\t@CheckSecurity(\"Permission:Delete\")\n\tpublic async deleteGuid(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\tawait ds.permissionRepository().delete({ guid: guid });\n\t}\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "80fc4312-5e20-45ae-acf2-27aa61cb6a14",
+            "title": "SecurableService.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/SecurableService.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { EntitiesDataSource } from \"../data/EntitiesDataSource\";\nimport { BaseService } from \"./BaseService\";\nimport { SecurableDto } from \"common/src/models/SecurableDto\";\nimport { SecurableEntity } from \"../data/SecurableEntity\";\nimport { CheckSecurity } from \"./CheckSecurity\";\n\nexport class SecurableService extends BaseService {\n\tpublic constructor(app: express.Express) {\n\t\tsuper();\n\n\t\tapp.get(\"/api/v0/securables\", (req, resp) => { this.methodWrapper(req, resp, this.getList) });\n\t\tapp.put(\"/api/v0/securable\", (req, resp) => { this.methodWrapper(req, resp, this.putSave) });\n\t\tapp.delete(\"/api/v0/securable/:guid\", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });\n\t}\n\n\t@CheckSecurity(\"Securable:List\")\n\tpublic async getList(req: express.Request, ds: EntitiesDataSource): Promise<SecurableDto[]> {\n\t\treturn await ds.securableRepository().find();\n\t}\n\n\t@CheckSecurity(\"Securable:Save\")\n\tpublic async putSave(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst entity = new SecurableEntity();\n\t\tentity.copyFrom(req.body as SecurableDto);\n\n\t\tawait ds.securableRepository().save([entity]);\n\t}\n\n\t@CheckSecurity(\"Securable:Delete\")\n\tpublic async deleteGuid(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\tawait ds.securableRepository().delete({ guid: guid });\n\t}\n}\n```"
+                }
+            ]
+        },
+        {
+            "guid": "4e7b1d38-705e-461a-83b4-be767243b13e",
+            "title": "UserService.ts",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "You are a Lago Vista Technologies programmer.  You provide professional, direct, concise, factual answers."
+                },
+                {
+                    "role": "assistant",
+                    "content": "I am a honest, professional, direct, concise programmer."
+                },
+                {
+                    "role": "user",
+                    "content": "Please provide me the following file:\n\n- Project: ts-react-express\n- File name: backend/src/services/UserService.ts"
+                },
+                {
+                    "role": "assistant",
+                    "content": "```\nimport express from \"express\";\nimport { UserDto } from \"common/src/models/UserDto\";\nimport { EntitiesDataSource } from \"../data/EntitiesDataSource\";\nimport { UserEntity } from \"../data/UserEntity\";\nimport { BaseService } from \"./BaseService\";\nimport { CheckSecurity } from \"./CheckSecurity\";\n\nexport class UserService extends BaseService {\n\tpublic constructor(app: express.Express) {\n\t\tsuper();\n\n\t\tapp.get(\"/api/v0/users\", (req, resp) => { this.methodWrapper(req, resp, this.getList) });\n\t\tapp.put(\"/api/v0/user\", (req, resp) => { this.methodWrapper(req, resp, this.putSave) });\n\t\tapp.delete(\"/api/v0/user/:guid\", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });\n\t}\n\n\t@CheckSecurity(\"User:List\")\n\tpublic async getList(req: express.Request, ds: EntitiesDataSource): Promise<UserDto[]> {\n\t\treturn await ds.userRepository().find();\n\t}\n\n\t@CheckSecurity(\"User:Save\")\n\tpublic async putSave(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst entity = new UserEntity();\n\t\tentity.copyFrom(req.body as UserDto);\n\n\t\tawait ds.userRepository().save([entity]);\n\t}\n\n\t@CheckSecurity(\"User:Delete\")\n\tpublic async deleteGuid(req: express.Request, ds: EntitiesDataSource): Promise<void> {\n\t\tconst guid = req.params[\"guid\"];\n\n\t\tawait ds.userRepository().delete({ guid: guid });\n\t}\n}\n```"
+                }
+            ]
+        }
+    ]
+}
