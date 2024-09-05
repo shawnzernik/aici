@@ -1,3 +1,4 @@
+from datetime import datetime
 import multiprocessing
 from typing import Optional
 import re
@@ -25,6 +26,7 @@ warnings.filterwarnings("ignore")
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 num_cpus = multiprocessing.cpu_count()
+print(f"## Number of CPUs: {num_cpus}")
 os.environ['OMP_NUM_THREADS'] = str(num_cpus)
 os.environ['MKL_NUM_THREADS'] = str(num_cpus)
 torch.set_num_threads(num_cpus)
@@ -74,16 +76,19 @@ class Aici:
         print("## Aici.__load_model()")
         
         if bnbc is None:
-            # Load model with int8 quantization enabled
+            print(f"## Aici.__load_model() - No BnB")
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.config.model,
                 device_map="auto",
-                load_in_8bit=True  # Enable int8 quantization
+                attn_implementation='eager',
+                torch_dtype=torch.bfloat16
             )
         else:
+            print(f"## Aici.__load_model() - BnB")
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.config.model,
                 device_map="auto",
+                attn_implementation='eager',
                 quantization_config=bnbc
             )
 
@@ -184,18 +189,25 @@ class Aici:
     def train(self):
         print("## Aici.train()")
         
+        print("## Aici.train() - BnB")
         bnb_config = BitsAndBytesConfig(
-            load_in_8bit=True  # Enable int8 quantization
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_use_double_quant=True,
         )
         
+        print("## Aici.train() - Loading")
         self.load(bnb_config)
+        print("## Aici.train() - Adjusting Loaded")
 
         self.tokenizer.padding_side = "right"
 
         self.model.config.use_cache = False
         self.model.config.pretraining_tp = 1            
 
-        cls = bitsandbytes.nn.Linear8bitLt
+        print("## Aici.train() - Determine Modules")
+        cls = bitsandbytes.nn.Linear4bit
         lora_modules_names = set()
         for name, module in self.model.named_modules():
             if isinstance(module, cls):
@@ -205,6 +217,9 @@ class Aici:
             lora_modules_names.remove("lm_head")
         target_modules = list(lora_modules_names)
 
+        print(f"## Target Modules: {target_modules}")
+
+        print("## Aici.train() - Lora Config")
         self.peft_config = LoraConfig(
             lora_alpha=16,
             lora_dropout=0.05,
@@ -215,22 +230,28 @@ class Aici:
         )
         self.model = prepare_model_for_kbit_training(self.model)
         self.model = get_peft_model(self.model, self.peft_config)            
-        
-        training_arguments = TrainingArguments(
-            output_dir=self.config.train_output_dir,
-            num_train_epochs=self.config.epochs,
-            logging_strategy="epoch",
-
-            per_device_train_batch_size=1,
-            gradient_accumulation_steps=1,
-            bf16=False,  # Int8 model, no need for bf16
-            fp16=False,  # Disable fp16 since we are using int8
-        )
-        
+                
         datasets = self.__load_dataset()
         for key in datasets:
-            print(f"## Batch Count: {len(datasets[key]['train'])}")            
+            print(f"## Batch Count: {len(datasets[key]["train"])}")            
             print(f"## Tokenization Length: {key}")            
+
+            print("## Aici.train() - Training Arguments")
+            run_name = datetime.now().strftime("%Y%m%d%H%M%S")
+            training_arguments = TrainingArguments(
+                output_dir=self.config.train_output_dir,
+                num_train_epochs=self.config.epochs,
+                logging_strategy="epoch",
+                
+                run_name=f"{run_name}-{key}",
+
+                per_device_train_batch_size=1,
+                #fp16=True,
+                bf16=True,
+                # gradient_accumulation_steps=4,
+                # gradient_checkpointing=True,
+            )
+
             trainer = SFTTrainer(
                 model=self.model,
                 train_dataset=datasets[key]["train"],

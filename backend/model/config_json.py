@@ -7,7 +7,6 @@ class ConfigJson:
     max_new_tokens: int
     max_length: int
     starting_conversation: List[dict[str, str]]
-    source_model: str
     target_model: str
     task_type: str
     epochs: int
@@ -21,7 +20,6 @@ class ConfigJson:
         self.max_new_tokens = dict['maxNewTokens']
         self.max_length = dict['maxLength']
         self.starting_conversation = dict["startingConversation"]
-        self.source_model = dict['sourceModel']
         self.target_model = dict['targetModel']
         self.task_type = dict["taskType"]
         self.epochs = dict["epochs"]

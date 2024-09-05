@@ -6,7 +6,6 @@ export interface Configuration {
     hfToken: string;
     maxNewTokens: number;
     maxLength: number;
-    sourceModel: string;
     targetModel: string;
     taskType: string;
     epochs: number;

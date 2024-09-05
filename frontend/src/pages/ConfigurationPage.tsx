@@ -35,7 +35,6 @@ export class ConfigurationPage extends Component<Props, State> {
                 model: "",
                 hfToken: "",
                 maxNewTokens: 4000,
-                sourceModel: "",
                 targetModel: "",
                 taskType: "",
                 epochs: 0,
@@ -202,15 +201,6 @@ export class ConfigurationPage extends Component<Props, State> {
 
                     <h2>Training</h2>
                     <Form>
-                        <Field label="Source Model" size={2}>
-                            <Input
-                                onChange={(e) => {
-                                    config.sourceModel = e.target.value;
-                                    this.setState({ config });
-                                }}
-                                value={config.sourceModel}
-                            />
-                        </Field>
                         <Field label="Target Model" size={2}>
                             <Input
                                 onChange={(e) => {
