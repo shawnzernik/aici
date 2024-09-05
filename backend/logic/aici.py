@@ -74,17 +74,16 @@ class Aici:
         print("## Aici.__load_model()")
         
         if bnbc is None:
+            # Load model with int8 quantization enabled
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.config.model,
                 device_map="auto",
-                attn_implementation='eager',
-                torch_dtype=torch.bfloat16
+                load_in_8bit=True  # Enable int8 quantization
             )
         else:
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.config.model,
                 device_map="auto",
-                attn_implementation='eager',
                 quantization_config=bnbc
             )
 
@@ -186,10 +185,7 @@ class Aici:
         print("## Aici.train()")
         
         bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype="float16",
-            bnb_4bit_use_double_quant=True,
+            load_in_8bit=True  # Enable int8 quantization
         )
         
         self.load(bnb_config)
@@ -199,7 +195,7 @@ class Aici:
         self.model.config.use_cache = False
         self.model.config.pretraining_tp = 1            
 
-        cls = bitsandbytes.nn.Linear4bit
+        cls = bitsandbytes.nn.Linear8bitLt
         lora_modules_names = set()
         for name, module in self.model.named_modules():
             if isinstance(module, cls):
@@ -227,12 +223,13 @@ class Aici:
 
             per_device_train_batch_size=1,
             gradient_accumulation_steps=1,
-            fp16=True,
+            bf16=False,  # Int8 model, no need for bf16
+            fp16=False,  # Disable fp16 since we are using int8
         )
         
         datasets = self.__load_dataset()
         for key in datasets:
-            print(f"## Batch Count: {len(datasets[key]["train"])}")            
+            print(f"## Batch Count: {len(datasets[key]['train'])}")            
             print(f"## Tokenization Length: {key}")            
             trainer = SFTTrainer(
                 model=self.model,
