@@ -12,7 +12,7 @@ import torch
 from datasets import Dataset, DatasetDict
 from huggingface_hub import login
 from peft import prepare_model_for_kbit_training, get_peft_model, LoraConfig, PeftModel, PeftConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizer, BitsAndBytesConfig, TrainingArguments, TrainerCallback, TrainerState, TrainerControl
+from transformers import HybridCache, AutoModelForCausalLM, AutoTokenizer, PreTrainedTokenizer, BitsAndBytesConfig, TrainingArguments, TrainerCallback, TrainerState, TrainerControl
 from trl import SFTTrainer
 import bitsandbytes
 
@@ -36,7 +36,8 @@ class Aici:
     tokenizer: PreTrainedTokenizer = None
     model: AutoModelForCausalLM = None
     device: torch.device = None
-
+    past_key_values: HybridCache = None
+    
     def __cleanup(self):
         print("## Aici.__cleanup()")
 
@@ -86,6 +87,35 @@ class Aici:
                 torch_dtype=torch.float16,  # Changed to float16
                 # offload_folder="offload"  # Offload to CPU/NVMe for memory savings
             )
+            
+            self.model.forward = torch.compile(model.forward, mode="reduce-overhead", fullgraph=True)
+            
+            input_text = "The theory of special relativity states "
+            model_inputs = tokenizer(input_text, return_tensors="pt").to("cuda")
+            prompt_length = model_inputs.input_ids.shape[1]
+            
+            self.past_key_values = HybridCache(
+                config=self.model.config,
+                max_batch_size=1,
+                max_cache_len=self.model.config.max_position_embeddings,
+                device=self.model.device,
+                dtype=self.model.dtype
+            )
+            
+            self.model._supports_cache_class = True
+            self.model.generation_config.cache_implementation = None
+            
+            # two warm-up steps
+            for idx in range(2):
+                outputs = self.model.generate(
+                    **model_inputs, 
+                    past_key_values=self.past_key_values, 
+                    do_sample=True, 
+                    temperature=1.0, 
+                    max_new_tokens=128
+                )
+                self.past_key_values.reset()
+
         else:
             print(f"## Aici.__load_model() - BnB")
             self.model = AutoModelForCausalLM.from_pretrained(
@@ -124,7 +154,13 @@ class Aici:
         ).to(self.device)
         
         start_time = time()
-        outputs = self.model.generate(**inputs, max_new_tokens=self.config.max_new_tokens)
+        outputs = self.model.generate(
+            **inputs, 
+            max_new_tokens=self.config.max_new_tokens,
+            past_key_values=self.past_key_values, 
+            do_sample=True, 
+            temperature=1.0, 
+        )
         end_time = time()
     
         input_tokens = inputs["input_ids"].size(-1)
