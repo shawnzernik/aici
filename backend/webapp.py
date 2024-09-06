@@ -15,6 +15,8 @@ from services.configuration import Configuration
 
 class WebApp:
     def main(self):
+        print(f"## WebApp.main()")
+        
         self.app = FastAPI()
         self.app.mount(Config.static_uri, StaticFiles(directory=Config.static_dir))
         self.app.mount(Config.scripts_uri, StaticFiles(directory=Config.scripts_dir))
@@ -38,7 +40,7 @@ class WebApp:
             self.aici = Aici()
             self.aici.load()
         except Exception as e:
-            print(e)
+            print(f"## WebApp.load_aici() - Error: {e}")
             pass
 
     async def default(self):
@@ -57,5 +59,5 @@ class WebApp:
                 "cpu": Monitor().percentage_cpu_used()}
             )
         except Exception as e:
-            print(e)
+            print(f"## WebApp.stats() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))

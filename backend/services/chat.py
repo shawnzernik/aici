@@ -19,7 +19,7 @@ class Chat:
             response = self.webapp.aici.chat(messages)
             return JSONResponse(content=response)
         except Exception as e:
-            print(e)
+            print(f"## Chat.chat() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
     async def reload(self):
@@ -27,7 +27,7 @@ class Chat:
             self.webapp.load_aici()
             return JSONResponse(content={ "status": "ok" })
         except Exception as e:
-            print(e)
+            print(f"## Chat.reload() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
     async def train(self):
@@ -35,7 +35,7 @@ class Chat:
             self.webapp.aici.train()
             return JSONResponse(content={"status": "ok"})
         except Exception as e:
-            print(e)
+            print(f"## Chat.train() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
         
     async def push_to_hub(self):
@@ -43,5 +43,5 @@ class Chat:
             self.webapp.aici.push_to_hub()
             return JSONResponse(content={"status": "ok"})
         except Exception as e:
-            print(e)
+            print(f"## Chat.push_to_hub() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))        

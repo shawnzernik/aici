@@ -26,7 +26,7 @@ warnings.filterwarnings("ignore")
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 num_cpus = multiprocessing.cpu_count()
-print(f"## Number of CPUs: {num_cpus}")
+print(f"## aici.py - Number of CPUs: {num_cpus}")
 os.environ['OMP_NUM_THREADS'] = str(num_cpus)
 os.environ['MKL_NUM_THREADS'] = str(num_cpus)
 torch.set_num_threads(num_cpus)
@@ -73,15 +73,18 @@ class Aici:
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.model)
         
     def __load_model(self, bnbc: Optional[BitsAndBytesConfig] = None):
-        print("## Aici.__load_model()")
+        print(f"## Aici.__load_model() - {self.config.model}")
         
         if bnbc is None:
             print(f"## Aici.__load_model() - No BnB")
+            torch.set_float32_matmul_precision("high")
+
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.config.model,
                 device_map="auto",
                 attn_implementation='eager',
-                torch_dtype=torch.bfloat16
+                torch_dtype=torch.float16,  # Changed to float16
+                # offload_folder="offload"  # Offload to CPU/NVMe for memory savings
             )
         else:
             print(f"## Aici.__load_model() - BnB")
@@ -89,7 +92,8 @@ class Aici:
                 self.config.model,
                 device_map="auto",
                 attn_implementation='eager',
-                quantization_config=bnbc
+                quantization_config=bnbc,
+                offload_folder="offload"  # Offload to CPU/NVMe for memory savings
             )
 
     def __hf_login(self):
@@ -193,7 +197,7 @@ class Aici:
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_compute_dtype=torch.float16,  # Changed to float16
             bnb_4bit_use_double_quant=True,
         )
         
@@ -217,7 +221,7 @@ class Aici:
             lora_modules_names.remove("lm_head")
         target_modules = list(lora_modules_names)
 
-        print(f"## Target Modules: {target_modules}")
+        print(f"## Aici.train() - Target Modules: {target_modules}")
 
         print("## Aici.train() - Lora Config")
         self.peft_config = LoraConfig(
@@ -232,9 +236,14 @@ class Aici:
         self.model = get_peft_model(self.model, self.peft_config)            
                 
         datasets = self.__load_dataset()
-        for key in datasets:
-            print(f"## Batch Count: {len(datasets[key]["train"])}")            
-            print(f"## Tokenization Length: {key}")            
+        sorted_keys = sorted(datasets.keys())
+        cnt = 0
+        for key in sorted_keys:
+            cnt = cnt + 1
+            print(f"## Aici.train() - Total Batches: {len(sorted_keys)}")
+            print(f"## Aici.train() - Current Batch: {cnt}")
+            print(f"## Aici.train() - Batch Count: {len(datasets[key]['train'])}")            
+            print(f"## Aici.train() - Tokenization Length: {key}")            
 
             print("## Aici.train() - Training Arguments")
             run_name = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -246,10 +255,11 @@ class Aici:
                 run_name=f"{run_name}-{key}",
 
                 per_device_train_batch_size=1,
-                #fp16=True,
-                bf16=True,
-                # gradient_accumulation_steps=4,
-                # gradient_checkpointing=True,
+                fp16=True,  # Changed to use fp16
+                #gradient_accumulation_steps=4,  # Accumulate gradients to simulate larger batch size
+                #gradient_checkpointing=True,  # Enable gradient checkpointing for memory savings
+                fp16_full_eval=True,  # Use FP16 during evaluation for memory efficiency
+                optim="paged_adamw_8bit"  # Use 8-bit optimizer for lower memory usage
             )
 
             trainer = SFTTrainer(
@@ -263,22 +273,22 @@ class Aici:
         
             trainer.add_callback(EarlyStoppingCallback())
 
-            print("## Starting Training")
+            print("## Aici.train() - Starting Training")
             trainer.train()
-            print("## Finished Training")
+            print("## Aici.train() - Finished Training")
 
         
-        print("## Starting Merge")
-        print(f"## Type: {type(self.model)}")
+        print("## Aici.train() - Starting Merge")
+        print(f"## Aici.train() - Type: {type(self.model)}")
         self.model = self.model.merge_and_unload()
-        print(f"## Type: {type(self.model)}")
-        print("## Finished Merge")
+        print(f"## Aici.train() - Type: {type(self.model)}")
+        print("## Aici.train() - Finished Merge")
 
         epoch_output = f"{self.config.target_model}"
-        print(f"## Saving: {epoch_output}")
+        print(f"## Aici.train() - Saving: {epoch_output}")
         self.tokenizer.save_pretrained(epoch_output)
         self.model.save_pretrained(epoch_output)
-        print(f"## Saved: {epoch_output}")
+        print(f"## Aici.train() - Saved: {epoch_output}")
                   
     def push_to_hub(self):
         print("## Aici.push_to_hub()")
@@ -296,12 +306,12 @@ class EarlyStoppingCallback(TrainerCallback):
 
     def on_log(self, args, state: TrainerState, control: TrainerControl, logs=None, **kwargs):
         if logs is not None and 'loss' in logs and logs['loss'] <= self.config.target_loss:
-            print(f"\n## Early stopping triggered. Loss: {logs['loss']} <= {self.config.target_loss}\n")
+            print(f"## EarlyStoppingCallback.on_log() - Early stopping triggered. Loss: {logs['loss']} <= {self.config.target_loss}\n")
             control.should_training_stop = True
 
     def on_step_end(self, args, state: TrainerState, control: TrainerControl, **kwargs):
         if len(state.log_history) > 0 and state.log_history[-1].get("loss", None) is not None:
             current_loss = state.log_history[-1]["loss"]
             if current_loss <= self.config.target_loss:
-                print(f"\n## Early stopping triggered. Loss: {current_loss} <= {self.config.target_loss}\n")
+                print(f"## EarlyStoppingCallback.on_step_end() - Early stopping triggered. Loss: {current_loss} <= {self.config.target_loss}\n")
                 control.should_training_stop = True

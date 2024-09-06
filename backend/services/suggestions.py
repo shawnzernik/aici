@@ -14,26 +14,26 @@ class Suggestions:
         try:
             return FileHelper().list(Config.suggestions_dir, ".ds.json")
         except Exception as e:
-            print(e)
+            print(f"## Suggestions.list() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
     
     async def read(self, name: str):
         try:
             return FileHelper().read(Config.suggestions_dir + "/" + name + ".ds.json")
         except Exception as e:
-            print(e)
+            print(f"## Suggestions.read() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
     async def save(self, name: str, data: str = Body(...)):
         try:
             return FileHelper().save(Config.suggestions_dir + "/" + name + ".ds.json", data)
         except Exception as e:
-            print(e)
+            print(f"## Suggestions.save() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
 
     async def delete(self, name: str):
         try:
             return FileHelper().delete(Config.suggestions_dir + "/" + name + ".ds.json")
         except Exception as e:
-            print(e)
+            print(f"## Suggestions.delete() - Error: {e}")
             raise HTTPException(status_code=500, detail=str(e))
