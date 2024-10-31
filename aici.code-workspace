@@ -2,7 +2,20 @@
 	"folders": [
 		{
 			"path": "."
-		},
+		}
 	],
-	"settings": {}
+    "settings": {
+        "cSpell.words": [
+            "Aici",
+            "qdrant",
+            "securables",
+            "Zernik"
+        ],
+        "emmet.showAbbreviationSuggestions": false,
+        "emmet.showExpandedAbbreviation": "never",
+        "emmet.showSuggestionsAsSnippets": false,
+        "editor.hover.delay": 1000,
+        "editor.trimAutoWhitespace": true,
+        "editor.formatOnSave": true
+    }
 }

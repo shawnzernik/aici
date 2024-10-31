@@ -1,0 +1,138 @@
+@font-face {
+    font-family: "HeadingText";
+    src: url('./roboto-slab/RobotoSlab-VariableFont_wght.ttf') format('truetype');
+}
+@font-face {
+    font-family: "MonoText";
+    src: url('./roboto-mono/RobotoMono-VariableFont_wght.ttf') format('truetype');
+}
+@font-face {
+    font-family: "BodyText";
+    src: url('./roboto/Roboto-Regular.ttf') format('truetype');
+}
+
+* {
+    font-family: "BodyText";
+    font-size: 14px;
+    font-weight: 400;
+    box-sizing: border-box;
+    /* overflow: hidden; */
+    color: #686868;
+    border: 0;
+    margin: 0;
+}
+
+/* .marked {
+    line-height: 1.75;
+} */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6
+ {
+    font-family: "HeadingText";
+    margin-top: 28px; /* Spacing above headings */
+    margin-bottom: 14px; /* Spacing below headings */
+    color: #000; /* Darker color for headings */
+}
+
+h1 {
+    font-size: 6em;
+}
+
+h2 {
+    font-size: 5em;
+}
+
+h3 {
+    font-size: 4em;
+}
+h4 {
+    font-size: 3em;
+}
+h5 {
+    font-size: 2em;
+}
+h6 {
+    font-size: 1em;
+}
+
+h1:first-child {
+    margin-top: 0;
+}
+
+p {
+    margin: 1em 0; /* Spacing between paragraphs */
+}
+
+a {
+    color: #007bff; /* Link color */
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+ul,
+ol {
+    margin: 1em 0; /* Spacing for lists */
+    padding-left: 2em; /* Indent lists */
+}
+
+li {
+    margin-bottom: 0.5em; /* Spacing between list items */
+}
+
+blockquote {
+    border-left: 0.25em solid #ccc; /* Style for blockquotes */
+    padding-left: 0.5em;
+    margin: 1em 0; /* Spacing for blockquotes */
+}
+
+img {
+    max-width: 100%; /* Responsive images */
+    height: auto; /* Maintain aspect ratio */
+    margin: 1em 0; /* Spacing around images */
+}
+
+code {
+    font-family: "MonoText", monospace; /* Monospace font for inline code */
+    background-color: #eee; /* Light background for code */
+    border-radius: 0.25em; /* Rounded corners */
+    color: #000;
+}
+
+pre {
+    background-color: #eee; /* Background for code blocks */
+    padding: 0.625em; /* Padding for code blocks */
+    overflow: auto; /* Scroll if overflow */
+    border-radius: 0.25em; /* Rounded corners */
+    white-space: pre-wrap; /* Wrap long lines */
+}
+
+table {
+    /* width: 100%; */
+    border-collapse: collapse; /* Remove space between borders */
+    margin: 1em 0; /* Margin for tables */
+}
+
+th,
+td {
+    border: 0.0625em solid #bbb; /* Border for table cells */
+    padding: 0.5em; /* Padding inside cells */
+    text-align: left; /* Left align text */
+}
+
+th {
+    background-color: #ddd; /* Light background for header */
+    font-weight: bold; /* Bold text for header */
+}
+
+strong, b {
+    font-weight: bolder;
+    color: #000;
+}

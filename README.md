@@ -1,147 +1,71 @@
-# Aici
-Artificial Intelligence Continuous Improvement
+# TS React Express
 
-## Purpose
+The following is intended to be base code providing functionality for a modular system.
 
-This application was developed in response to using AI for code generation and programming.  This provides the ability to semd messages to the AI model.  The request and response can be "sugggested" for correction.  You can then used the data set editor to modify the assistants' response for further training.
+## License
 
-As a test case, we used Gemma 2 2B IT model to assist in creating the code.  The dataset was built in response to AI answers as we worked through the base application.
+TS React Express
 
-### Base Application
+Copyright (C) 2024 Shawn Zernik
 
-This is a TypeScript application using Express on the backend, and React on the front end.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-## Folder Structure
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-- **aici/**
-  - **aici/**
-    - **datasets/** - JSON datasets used for UI and AI training
-    - **suggestions/** - where suggestions are stored till merged into datasets 
-    - **backend/** - python server side with Web API and AI model
-      - **logic/** - business logic
-      - **model/** - data structures to store and send data
-        - **config_json.py** - this is the config sent to/from the UI used for AI model
-      - **services/** - the web apis
-      - **main.py** - this is where the application will start from this file
-      - **webapp.py** - the main class that drives FastAPI and routes
-      - **config.py** - configuration used to boot the FastAPI server
-    - **frontend/** - React TypeScript UI
-      - **dist/** - this is where webpack builds to - ephemeral storage only
-      - **src/** - TypeScrip sources
-      - **static/** - static web content served as "/static"
-    - **documentation/** - additional documentation
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-## Server Setup
+Also add information on how to contact you by electronic and paper mail.
 
-Get the Ubuntu server up and running, setup the NIC for DHCP:
+If your software can interact with users remotely through a computer network, you should also make sure that it provides a way for users to get its source. For example, if your program is a web application, its interface could display a "Source" link that leads users to an archive of the code. There are many ways you could offer source, and different solutions will be better for different programs; see section 13 for the specific requirements.
+
+You should also get your employer (if you work as a programmer) or school, if any, to sign a "copyright disclaimer" for the program, if necessary. For more information on this, and how to apply and follow the GNU AGPL, see <https://www.gnu.org/licenses/>.
+
+## Screen Shots
+
+![Login](login.png)
+
+![License](license.png)
+
+## Getting it Running
 
 ```
-sudo vi /etc/netplan/50-cloud-init.yaml
-```
 
-With the following contents:
-
-```
-network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    enp3s0:
-      dhcp4: yes
-```
-
-Save then run:
-
-```
-sudo netplan apply
-```
-
-Once done, you can see you ip address:
-
-```
-ip address
-```
-
-Python setup:
-
-```
-sudo apt-get update
-sudo apt-get -y upgrade
-sudo apt install -y python3.12-venv
-sudo apt-get install -y python3.12-dev libopenmpi-dev npm python3-pip
-```
-
-Clone the repo:
-
-```
-git remote set-url origin https://ghp_SOMESECRETKEYFROMGITHUBHERE@github.com/shawnzernik/aici.git
-```
-
-You should now have a ```~/aici/``` folder.  Not the path relative to the users folder.
-
-Restart the server for NPM to work.  Change to ```frontend``` folder and run:
-
-```
-npm install
+cd backend
+npm run install
+npm tsc
+cd ../frontend
+npm run install
 npm run build
+
+cd ../database
+./0.0.0.sh
+
+cd ../backend
+npm run run
 ```
 
-Change to ```backend``` folder and run:
+## Chat Maker
 
-```
-sudo pip install --upgrade pip
-python3 -m venv ./.venv
-source ./.venv/bin/activate
-pip install -r requirements.txt 
-```
+This is a script that will populate markdown for use with Chat GPT to generate code.
 
-Make sure to install your GPU drivers:
+## Make Data Set
 
-```
-sudo add-apt-repository ppa:graphics-drivers/ppa
-sudo apt update
-sudo apt install -y ubuntu-drivers-common nvidia-cuda-toolkit
+This is for use with Aici to create a training dataset to feed to Gemini 2 model.  The idea is to train an AI model on the code base to make it more effective at completions.
 
-lspci -nn | grep -i nvidia
+### Aici
 
-ubuntu-drivers devices
+Aici is an 'AI Continuous Improvement' web system that trains and run AI models.  It allows the saving of responses as "suggestions" so you can correct them and feed it back to train the AI from the correction.
 
-sudo apt-get install nvidia-driver-560
-```
+[shawnzernik/aici](https://github.com/shawnzernik/aici)
 
-Not that everything is installed, you should be able to run it:
+## Postgres
 
-```
-cd ~/aici/backend
-python3 main.py
-```
+This is a shell script that will boot up the Podman database.
 
-You can open a terminal to the server and use the two following commands to monitor utilization:
+## Database
 
-```
-watch -n 1 nvidia-smi
-top
-watch -n 1 iostat -h
-```
+This is the location where the database scripts are stored.
 
-## Random Notes
+## Common
 
-pipx ensurepath
-pipx install transformers datasets torch
-
-source /home/ubuntu/.local/share/pipx/venvs/transformers/bin/activate
-
-python3 train.py
-
-sudo docker stop b73546cf06b2
-sudo systemctl stop ollama
-sudo mkfs -t ext4 /dev/nvme1n1
-sudo mount /dev/nvme1n1 /drive2
-sudo chown -R ubuntu:ubuntu /drive2
-sudo chmod -R 775 /drive2
-mkdir /drive2/huggingface
-mkdir /drive2/smb
-
-
-  git config --global user.email "szernik@ubuntu"
-  git config --global user.name "Shawn Zernik"
+This is code that is reused both on the front end and backend.

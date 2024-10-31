@@ -2,14 +2,110 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Website",
-            "type": "debugpy",
+            "type": "node",
             "request": "launch",
-            "program": "${workspaceFolder}/backend/main.py",
-            "pythonPath": "${workspaceFolder}/backend/.venv/bin/python",
+            "name": "backend website",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": [
+                "nodemon",
+                "--inspect",
+                "-r",
+                "ts-node/register",
+                "${workspaceFolder}/backend/src/index.ts"
+            ],
+            "sourceMaps": true,
             "cwd": "${workspaceFolder}/backend",
+            "protocol": "inspector",
+            "outFiles": [
+                "${workspaceFolder}/**/*.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "backend jest",
+            "program": "${workspaceFolder}/backend/node_modules/jest/bin/jest",
+            "args": [
+                "--runInBand"
+            ],
             "console": "integratedTerminal",
-            "preLaunchTask": "Install Requirements"
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeArgs": [
+                "--inspect-brk=9229"
+            ],
+            "port": 9229,
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}/backend",
+            "windows": {
+                "program": "${workspaceFolder}/backend/node_modules/jest/bin/jest.cmd"
+            }
+        },
+        {
+            "type": "firefox",
+            "request": "launch",
+            "name": "firefox",
+            "url": "https://localhost:4433/",
+            "webRoot": "${workspaceFolder}",
+            "reAttach": true,
+            "pathMappings": [
+                {
+                    "url": "webpack://common/src",
+                    "path": "${workspaceFolder}/frontend/src"
+                }
+            ],
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "common jest",
+            "program": "${workspaceFolder}/common/node_modules/jest/bin/jest",
+            "args": [
+                "--runInBand"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeArgs": [
+                "--inspect-brk=9229"
+            ],
+            "port": 9229,
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}/common",
+            "windows": {
+                "program": "${workspaceFolder}/common/node_modules/jest/bin/jest.cmd"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "frontend jest",
+            "program": "${workspaceFolder}/frontend/node_modules/jest/bin/jest",
+            "args": [
+                "--runInBand"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeArgs": [
+                "--inspect-brk=9229"
+            ],
+            "port": 9229,
+            "sourceMaps": true,
+            "cwd": "${workspaceFolder}/frontend",
+            "windows": {
+                "program": "${workspaceFolder}/frontend/node_modules/jest/bin/jest.cmd"
+            }
         }
     ]
 }
