@@ -7,8 +7,8 @@ import { AuthService } from "../services/AuthService";
  * Handles the logic for processing embeddings and messages.
  */
 export class EmbeddingLogic {
-    private static fileRegexp = /<!!\s*FILE\s*([~\w-/\.]*)\s*([~\w-/\.]*)\s*(?:NOFILENAME)?\s*!!\/>/g;
-    private static projectRegExp = /<!!\s*PROJECT\s*([~\w-/\.]*)\s*([~\w-/\.]*)\s*(?:NOFILENAME)?\s*!!\/>/g;
+    private static fileRegexp = /<!!\s*FILE\s*([~\w-/\\\.]*)\s*([~\w-/\\\.]*)\s*(?:NOFILENAME)?\s*!!\/>/g;
+    private static projectRegExp = /<!!\s*PROJECT\s*([~\w-/\\\.]*)\s*([~\w-/\\\.]*)\s*(?:NOFILENAME)?\s*!!\/>/g;
     private static mdFileNameRegExp = /File(?:\s*name)\s*[\`\']([\S]*)[\`\']:/g;
     private static mdFileContentRegExp = /\`\`\`(?:\S*)\n([\s\S]*)\n\`\`\`/g;
     private static equalsRegExp = /Equals:\s*(.*)/g;

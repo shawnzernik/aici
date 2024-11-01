@@ -1,9 +1,9 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
     "settings": {
         "cSpell.words": [
             "Aici",
@@ -16,6 +16,7 @@
         "emmet.showSuggestionsAsSnippets": false,
         "editor.hover.delay": 1000,
         "editor.trimAutoWhitespace": true,
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "workbench.tree.indent": 16
     }
 }

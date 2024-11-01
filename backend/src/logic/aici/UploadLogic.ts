@@ -140,6 +140,9 @@ export class UploadLogic {
             const includeSettingDto = await ds.settingRepository().findByKey("Aici:Upload:Include");
             const includeRexExes = this.createRegExes(includeSettingDto.value);
 
+            const qdrantOnUploadSetting = await ds.settingRepository().findByKey("Aici:Upload:Qdrant");
+            const qdRantOUploadSettingLogic = new SettingLogic(qdrantOnUploadSetting);
+
             const excludeSettingDto = await ds.settingRepository().findByKey("Aici:Upload:Exclude");
             const excludeRegExes = this.createRegExes(excludeSettingDto.value);
 
@@ -167,6 +170,7 @@ export class UploadLogic {
                         if (!(
                             fileContents.length / Config.embeddingBytesPerToken > Config.embeddingMaxTokens
                             || fileContents.length / Config.embeddingBytesPerToken > Config.embeddingMaxTokens
+                            || !qdRantOUploadSettingLogic.booleanValue()
                         )) {
                             try {
                                 embeddingResponse = await ApiLogic.getEmbedding(ds, fileName);

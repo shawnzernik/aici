@@ -12,6 +12,7 @@ INSERT INTO "settings" ("guid", "key", "value") VALUES
 ('4bcb2ae1-7c9d-4e19-a380-0abddcba8c18', 'Aici:API Key', 'YOU OPEN AI KEY HERE'),
 ('5cf54ca9-a9cb-46d6-bc9a-f1e63c30bd15', 'Aici:Project', '/Users/shawn/Projects/dotnet-fw2core'),
 
+('eccf7661-a2a9-4245-9b39-5d0641f78bb6', 'Aici:Upload:Qdrant', 't'),
 ('5f0c748e-c86d-43a2-aefa-1ea7b96563b6', 'Aici:Download:Confidence', '0.74'),
 ('96de4956-9018-47d2-a50d-fe071ac58338', 'Aici:Upload:Include', '
 \.ts$
