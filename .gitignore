@@ -6,9 +6,10 @@ postgres/data
 coverage
 make-dataset/datasets
 frontend/scripts
-frontend/static/pages
+frontend/static/tre/pages
 chat-maker/output.md
 backend/log.csv
 backend/dataset.jsonl
 temp
 database/temp.sql
+frontend/static/app/pages
