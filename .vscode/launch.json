@@ -48,20 +48,6 @@
             }
         },
         {
-            "type": "firefox",
-            "request": "launch",
-            "name": "firefox",
-            "url": "https://localhost:4433/",
-            "webRoot": "${workspaceFolder}",
-            "reAttach": true,
-            "pathMappings": [
-                {
-                    "url": "webpack://common/src",
-                    "path": "${workspaceFolder}/frontend/src"
-                }
-            ],
-        },
-        {
             "type": "node",
             "request": "launch",
             "name": "common jest",

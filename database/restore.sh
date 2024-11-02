@@ -9,7 +9,7 @@ BACKUP_FILE="$1"
 
 DB_HOST="localhost"
 DB_PORT="5432"
-DB_NAME="ts-react-express"
+DB_NAME="aici"
 DB_USER="postgres"
 DB_PASSWORD="postgres"
 

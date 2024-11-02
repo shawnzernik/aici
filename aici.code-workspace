@@ -17,6 +17,7 @@
         "editor.hover.delay": 1000,
         "editor.trimAutoWhitespace": true,
         "editor.formatOnSave": true,
-        "workbench.tree.indent": 16
+        "workbench.tree.indent": 16,
+        "terminal.integrated.scrollback": 100000
     }
 }
