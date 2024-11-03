@@ -4,7 +4,7 @@ export class Config {
     public static appName = Config.setString(process.env.APP_NAME, "TS React Express");
     public static appVersion = Config.setString(process.env.APP_VERSION, "0.0.2");
     public static appCopyright = Config.setString(process.env.APP_COPYRIGHT, "© Copyright 2024 Shawn Zernik");
-    public static appUrl = Config.setString(process.env.APP_COPYRIGHT, "https://localhost:4434");
+    public static appUrl = Config.setString(process.env.APP_URL, "https://localhost:4434");
     public static dbHost = Config.setString(process.env.DB_HOST, "localhost");
     public static dbName = Config.setString(process.env.DB_NAME, "aici");
     public static dbPassword = Config.setString(process.env.DB_PASSWORD, "postgres");

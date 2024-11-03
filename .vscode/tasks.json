@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "database build",
+            "type": "shell",
+            "command": "npx tsc",
+            "options": {
+                "cwd": "${workspaceFolder}/database"
+            },
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

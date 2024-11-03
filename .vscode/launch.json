@@ -50,48 +50,84 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "common jest",
-            "program": "${workspaceFolder}/common/node_modules/jest/bin/jest",
+            "name": "database new",
+            "program": "${workspaceFolder}/database/dist/index.js",
             "args": [
-                "--runInBand"
+                "new"
             ],
+            "cwd": "${workspaceFolder}/database",
+            "sourceMaps": true,
+            "protocol": "inspector",
             "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
+            "outFiles": [
+                "${workspaceFolder}/database/dist/**/*.js"
+            ],
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "runtimeArgs": [
-                "--inspect-brk=9229"
-            ],
-            "port": 9229,
-            "sourceMaps": true,
-            "cwd": "${workspaceFolder}/common",
-            "windows": {
-                "program": "${workspaceFolder}/common/node_modules/jest/bin/jest.cmd"
-            }
+            "preLaunchTask": "database build"
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "frontend jest",
-            "program": "${workspaceFolder}/frontend/node_modules/jest/bin/jest",
+            "name": "database backup",
+            "program": "${workspaceFolder}/database/dist/index.js",
             "args": [
-                "--runInBand"
+                "backup",
+                "TestBackup.sql"
             ],
+            "cwd": "${workspaceFolder}/database",
+            "sourceMaps": true,
+            "protocol": "inspector",
             "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
+            "outFiles": [
+                "${workspaceFolder}/database/dist/**/*.js"
+            ],
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "runtimeArgs": [
-                "--inspect-brk=9229"
+            "preLaunchTask": "database build"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "database restore",
+            "program": "${workspaceFolder}/database/dist/index.js",
+            "args": [
+                "restore",
+                "TestBackup.sql"
             ],
-            "port": 9229,
+            "cwd": "${workspaceFolder}/database",
             "sourceMaps": true,
-            "cwd": "${workspaceFolder}/frontend",
-            "windows": {
-                "program": "${workspaceFolder}/frontend/node_modules/jest/bin/jest.cmd"
-            }
+            "protocol": "inspector",
+            "console": "integratedTerminal",
+            "outFiles": [
+                "${workspaceFolder}/database/dist/**/*.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "preLaunchTask": "database build"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "database upgrade",
+            "program": "${workspaceFolder}/database/dist/index.js",
+            "args": [
+                "upgrade",
+            ],
+            "cwd": "${workspaceFolder}/database",
+            "sourceMaps": true,
+            "protocol": "inspector",
+            "console": "integratedTerminal",
+            "outFiles": [
+                "${workspaceFolder}/database/dist/**/*.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "preLaunchTask": "database build"
         }
     ]
 }

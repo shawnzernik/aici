@@ -1,0 +1,35 @@
+{
+    "0.0.0": [
+        "manager_versions.sql"
+    ],
+    "0.0.1": [
+        "tables/groups.sql",
+        "tables/memberships.sql",
+        "tables/passwords.sql",
+        "tables/permissions.sql",
+        "tables/securables.sql",
+        "tables/users.sql",
+        "tables/menus.sql",
+        "tables/settings.sql",
+        "tables/lists.sql",
+        "tables/list_filters.sql",
+        "tables/logs.sql",
+        "foreignkeys/memberships.sql",
+        "foreignkeys/passwords.sql",
+        "foreignkeys/permissions.sql",
+        "foreignkeys/menus.sql",
+        "foreignkeys/list_filters.sql",
+        "data/securables.sql",
+        "data/menus.sql",
+        "data/administrator.sql",
+        "data/anonymous.sql",
+        "data/lists.sql",
+        "data/settings.sql",
+        "data/list_filters.sql"
+    ],
+    "0.1.0": [
+        "tables/datasets.sql",
+        "tables/finetunes.sql",
+        "tables/prompts.sql"
+    ]
+}
