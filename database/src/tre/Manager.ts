@@ -15,10 +15,10 @@ export class Manager {
     private logs: string = "";
 
     private usage = "Command line arguments are invalid!  The following options are available:\n" +
-        "    npx ts-node src/index.ts new\n" +
-        "    npx ts-node src/index.ts upgrade\n" +
-        "    npx ts-node src/index.ts backup [name]\n" +
-        "    npx ts-node src/index.ts restore [name]\n";
+        "    npm run new\n" +
+        "    npm run upgrade\n" +
+        "    npm run backup [name]\n" +
+        "    num run restore [name]\n";
 
     public async execute(argv: string[]): Promise<void> {
         this.log("Manager.execute() - TS React Express Database Manager");
@@ -89,7 +89,7 @@ export class Manager {
 
         const scripts = config["0.0.0"];
         for (const script of scripts)
-            await this.executeSqlScript(new Version("0.0.0"), script);
+            await this.executeSqlScript(script);
 
         await this.updateVersion(new Version("0.0.0"));
 
@@ -165,7 +165,7 @@ export class Manager {
 
             const scripts = config[target.toString()];
             for (const script of scripts)
-                await this.executeSqlScript(target, script);
+                await this.executeSqlScript(script);
 
             await this.updateVersion(target);
         }
@@ -200,13 +200,10 @@ export class Manager {
             await ds.destroy();
         }
     }
-    private async executeSqlScript(version: Version, filename: string) {
-        this.log("Manager.executeSqlScript() - " + version.toString() + " - " + filename);
+    private async executeSqlScript(filename: string) {
+        this.log("Manager.executeSqlScript() - " + filename);
 
-        const folder = version.toString();
-        const fullpath = path.join(folder, filename);
-
-        const sql = fs.readFileSync(fullpath, { encoding: "utf8" });
+        const sql = fs.readFileSync(filename, { encoding: "utf8" });
         await this.executeSql(Config.dbName, sql);
     }
     private log(out: string) {

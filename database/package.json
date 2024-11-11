@@ -2,10 +2,12 @@
     "name": "database",
     "version": "0.0.1",
     "scripts": {
-        "new": "npx ts-node src/index.ts new",
-        "update": "npx ts-node src/index.ts update",
-        "backup": "npx ts-node src/index.ts backup",
-        "restore": "npx ts-node src/index.ts restore"
+        "build": "npx tsc",
+        "clean": "rm -R node_modules package-lock.json dist coverage",
+        "new": "node dist/index.js new",
+        "update": "node dist/index.js update",
+        "backup": "node dist/index.js backup",
+        "restore": "node dist/index.js restore"
     },
     "devDependencies": {
         "@types/pg": "^8.11.10",

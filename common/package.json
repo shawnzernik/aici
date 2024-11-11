@@ -5,7 +5,6 @@
     "version": "1.0.0",
     "scripts": {
         "build": "tsc",
-        "test": "jest",
         "clean": "rm -R node_modules package-lock.json dist coverage"
     },
     "devDependencies": {

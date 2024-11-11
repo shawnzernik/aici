@@ -1,6 +1,6 @@
 export class Config {
     public static dbHost = Config.setString(process.env.DB_HOST, "localhost");
-    public static dbName = Config.setString(process.env.DB_NAME, "ts-react-express");
+    public static dbName = Config.setString(process.env.DB_NAME, "aici");
     public static dbPassword = Config.setString(process.env.DB_PASSWORD, "postgres");
     public static dbPort = Config.setInt(process.env.DB_PORT, "5432");
     public static dbUsername = Config.setString(process.env.DB_USERNAME, "postgres");
