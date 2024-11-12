@@ -1,64 +1,33 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column } from "typeorm";
 import { CopyInterface } from "common/src/tre/logic/CopyInterface";
 import { ListFilterDto } from "common/src/tre/models/ListFilterDto";
 
-/**
- * Represents a List Filter entity in the database.
- */
-@Entity('list_filters')
+@Entity("list_filters")
 export class ListFilterEntity implements ListFilterDto, CopyInterface<ListFilterDto> {
-    /**
-     * The unique identifier for the list filter.
-     */
     @PrimaryColumn({ name: "guid" })
     public guid: string = "";
 
-    /**
-     * The GUID of the associated list.
-     */
-    @Column({ name: 'lists_guid' })
+    @Column({ name: "lists_guid" })
     public listsGuid: string = "";
 
-    /**
-     * The label of the list filter.
-     */
-    @Column({ name: 'label' })
+    @Column({ name: "label" })
     public label: string = "";
 
-    /**
-     * The SQL column associated with the list filter.
-     */
-    @Column({ name: 'sql_column' })
+    @Column({ name: "sql_column" })
     public sqlColumn: string = "";
 
-    /**
-     * The SQL type of the list filter.
-     */
-    @Column({ name: 'sql_type' })
+    @Column({ name: "sql_type" })
     public sqlType: string = "";
 
-    /**
-     * The SQL query options for the list filter.
-     */
-    @Column({ name: 'options_sql', type: 'text', nullable: true })
+    @Column({ name: "options_sql", type: "text", nullable: true })
     public optionsSql?: string = "";
 
-    /**
-     * The default comparison operator for the list filter.
-     */
-    @Column({ name: 'default_compare', nullable: true })
+    @Column({ name: "default_compare", nullable: true })
     public defaultCompare?: string = "";
 
-    /**
-     * The default value for the list filter.
-     */
-    @Column({ name: 'default_value', nullable: true })
+    @Column({ name: "default_value", nullable: true })
     public defaultValue?: string = "";
 
-    /**
-     * Copies properties from a source ListFilterDto to this instance.
-     * @param source - The source ListFilterDto object to copy from.
-     */
     public copyFrom(source: ListFilterDto): void {
         this.guid = source.guid;
         this.listsGuid = source.listsGuid;
@@ -70,10 +39,6 @@ export class ListFilterEntity implements ListFilterDto, CopyInterface<ListFilter
         this.defaultValue = source.defaultValue;
     }
 
-    /**
-     * Copies properties from this instance to a destination ListFilterDto.
-     * @param dest - The destination ListFilterDto object to copy to.
-     */
     public copyTo(dest: ListFilterDto): void {
         dest.guid = this.guid;
         dest.listsGuid = this.listsGuid;
