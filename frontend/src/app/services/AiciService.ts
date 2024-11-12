@@ -5,16 +5,7 @@ import { UUIDv4 } from "common/src/tre/logic/UUIDv4";
 import { LogDto } from "common/src/tre/models/LogDto";
 import { FetchWrapper } from "../../tre/services/FetchWrapper";
 
-/**
- * Service class for interacting with the Aici API.
- */
 export class AiciService {
-    /**
-     * Sends a chat message to the Aici API.
-     * @param token - Authentication token.
-     * @param messages - Array of messages to send.
-     * @returns AiciResponse - Response from the Aici API.
-     */
     public static async chat(token: string, messages: AiciMessage[]): Promise<AiciResponse> {
         const ret = await FetchWrapper.post<AiciResponse>({
             url: "/api/v0/aici/chat",
@@ -25,14 +16,6 @@ export class AiciService {
         return ret;
     }
 
-    /**
-     * Searches for items in a specified collection.
-     * @param token - Authentication token.
-     * @param collection - Name of the collection to search.
-     * @param similarTo - Input string for the search.
-     * @param limit - Number of results to return.
-     * @returns Any - Response from the search API.
-     */
     public static async search(token: string, collection: string, similarTo: string, limit: number): Promise<any> {
         const ret = await FetchWrapper.post<any>({
             url: "/api/v0/aici/search/" + collection,
@@ -46,11 +29,21 @@ export class AiciService {
         return ret;
     }
 
-    /**
-     * Reads a File object and returns its contents as an ArrayBuffer.
-     * @param f - File object to read.
-     * @returns Promise<ArrayBuffer> - Promise that resolves with the ArrayBuffer containing the file data.
-     */
+    public static async save(token: string, name: string, contents: string): Promise<void> {
+        const obj: AiciFile = {
+            file: name,
+            contents: contents
+        };
+
+        const corelation = UUIDv4.generate();
+        await FetchWrapper.post<AiciResponse>({
+            url: "/api/v0/aici/save",
+            body: obj,
+            corelation: corelation,
+            token: token
+        });
+    }
+
     private static async readFile(f: File): Promise<ArrayBuffer> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -61,12 +54,6 @@ export class AiciService {
         });
     }
 
-    /**
-     * Uploads a file to the Aici API.
-     * @param token - Authentication token.
-     * @param file - File object to upload.
-     * @returns Promise<string> - Promise that resolves with the correlation ID of the upload.
-     */
     public static async upload(token: string, file: File): Promise<string> {
         const buff = await this.readFile(file);
 
@@ -93,12 +80,6 @@ export class AiciService {
         return corelation;
     }
 
-    /**
-     * Downloads a file from the Aici API.
-     * @param token - Authentication token.
-     * @param file - Name of the file to download.
-     * @returns Promise<AiciFile> - Promise that resolves with the downloaded file object.
-     */
     public static async download(token: string, file: string): Promise<AiciFile> {
         const obj: AiciFile = {
             file: file,
@@ -114,6 +95,7 @@ export class AiciService {
 
         return response;
     }
+
     public static async project(token: string, file: string): Promise<AiciFile> {
         const obj: AiciFile = {
             file: file,
@@ -130,12 +112,6 @@ export class AiciService {
         return response;
     }
 
-    /**
-     * Retrieves log entries associated with a specific correlation ID.
-     * @param token - Authentication token.
-     * @param corelation - Correlation ID of the upload.
-     * @returns Promise<LogDto[]> - Promise that resolves with an array of log entries.
-     */
     public static async uploadLogs(token: string, corelation: string): Promise<LogDto[]> {
         const ret = await FetchWrapper.get<LogDto[]>({
             url: "/api/v0/aici/upload/" + corelation,

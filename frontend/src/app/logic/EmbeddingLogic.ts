@@ -3,9 +3,6 @@ import { AiciService } from "../services/AiciService";
 import { Dictionary } from "common/src/tre/Dictionary";
 import { AuthService } from "../../tre/services/AuthService";
 
-/**
- * Handles the logic for processing embeddings and messages.
- */
 export class EmbeddingLogic {
     private static fileRegexp = /<!!\s*FILE\s*([~\w-/\\\.]*)\s*([~\w-/\\\.]*)\s*(?:NOFILENAME)?\s*!!\/>/g;
     private static projectRegExp = /<!!\s*PROJECT\s*([~\w-/\\\.]*)\s*([~\w-/\\\.]*)\s*(?:NOFILENAME)?\s*!!\/>/g;
@@ -16,44 +13,15 @@ export class EmbeddingLogic {
     private static inputSetRegExp = /Set:\s*([^\s%]*)\s*=\s*(.*)/g;
     private static setRegExp = /Set:\s*([^\s%]*)/g;
 
-    /**
-     * Original messages received.
-     */
     public originals: AiciMessage[];
-    /**
-     * Completed messages processed.
-     */
     public completed: AiciMessage[] = [];
-    /**
-     * Values stored for processing.
-     */
     public values: Dictionary<string> = {};
-    /**
-     * Mapping of file names to their contents.
-     */
     public fileNameToContents: Dictionary<string> = {};
-    /**
-     * Total tokens used.
-     */
     public tokens: number = 0;
-    /**
-     * Total milliseconds taken for processing.
-     */
     public milliseconds: number = 0;
-    /**
-     * Maximum tokens used in a single prompt.
-     */
     public maxPromptTokens: number = 0;
-    /**
-     * Status message for processing.
-     */
     public status: string = "";
 
-    /**
-     * Constructor for EmbeddingLogic.
-     * @param originals Original messages received.
-     * @param input Input string for processing.
-     */
     public constructor(originals: AiciMessage[], input?: string) {
         this.originals = originals;
 
@@ -98,10 +66,6 @@ export class EmbeddingLogic {
         this.values["SAVE_PROMPT"] = savePrompt;
     }
 
-    /**
-     * Processes the messages and interacts with the Aici service.
-     * @throws Error if processing order is incorrect or no choices are returned.
-     */
     public async process(): Promise<void> {
         if (this.completed.length + 1 >= this.originals.length)
             throw new Error("Process called after all messages are completed!");
@@ -148,12 +112,6 @@ export class EmbeddingLogic {
         this.status = `Completed ${this.completed.length / 2} of ${this.originals.length / 2} pairs - Max Prompt Tokens: ${this.maxPromptTokens} - Total Tokens: ${this.tokens} - Seconds: ${this.milliseconds / 1000}`;
     }
 
-    /**
-     * Processes the response from the assistant.
-     * @param original Original assistant message.
-     * @param response Response message from the assistant.
-     * @returns Promise<void>
-     */
     private async processResponse(original: AiciMessage, response: AiciMessage): Promise<void> {
         let matches;
 
@@ -170,12 +128,6 @@ export class EmbeddingLogic {
             return await this.processSaveResponse(original, response);
     }
 
-    /**
-     * Processes the equals response from the assistant.
-     * @param original Original assistant message.
-     * @param response Response message from the assistant.
-     * @returns Promise<void>
-     */
     private async processEqualsResponse(original: AiciMessage, response: AiciMessage): Promise<void> {
         const matches = Array.from(original.content.matchAll(EmbeddingLogic.equalsRegExp));
         if (matches.length != 1)
@@ -187,12 +139,6 @@ export class EmbeddingLogic {
             throw new Error(`The expected value '${value.trim()}' does not match '${response.content.trim()}'!`);
     }
 
-    /**
-     * Processes the save response from the assistant.
-     * @param original Original assistant message.
-     * @param response Response message from the assistant.
-     * @returns Promise<void>
-     */
     private async processSaveResponse(original: AiciMessage, response: AiciMessage): Promise<void> {
         const fileNameMatches = Array.from(response.content.matchAll(EmbeddingLogic.mdFileNameRegExp));
         if (fileNameMatches.length != 1)
@@ -213,12 +159,6 @@ export class EmbeddingLogic {
         this.fileNameToContents[fileName] = fileContents;
     }
 
-    /**
-     * Processes the set response from the assistant.
-     * @param original Original assistant message.
-     * @param response Response message from the assistant.
-     * @returns Promise<void>
-     */
     private async processSetResponse(original: AiciMessage, response: AiciMessage): Promise<void> {
         const matches = Array.from(original.content.matchAll(EmbeddingLogic.setRegExp));
         if (matches.length != 1)
@@ -229,11 +169,6 @@ export class EmbeddingLogic {
         this.values[key] = response.content.trim();
     }
 
-    /**
-     * Processes variable replacements in the message content.
-     * @param original Original message content.
-     * @returns Processed message content.
-     */
     private processValues(original: string): string {
         let ret = original;
 
@@ -246,23 +181,18 @@ export class EmbeddingLogic {
         return ret;
     }
 
-    /**
-     * Processes file references in the message content.
-     * @param original Original message content.
-     * @returns Promise<string> Processed message content.
-     */
     private async processFiles(original: string): Promise<string> {
         let ret = original;
 
         const matches = Array.from(ret.matchAll(EmbeddingLogic.fileRegexp));
         for (let match of matches) {
-            const matchedText = match[0]; // matched text
+            const matchedText = match[0];
 
             if (!match[1] || !match[2])
                 throw new Error(`Invalid file format!  Expected /${EmbeddingLogic.fileRegexp.source}/g.  Received '${match[0]}'.`);
 
-            const keyName = match[1]; // group 1: value's key
-            const fileName = match[2]; // group 2: file name
+            const keyName = match[1];
+            const fileName = match[2];
 
             const token = await AuthService.getToken();
             const aiciFile = await AiciService.download(token, fileName);
@@ -282,7 +212,7 @@ export class EmbeddingLogic {
             markdown += "\n";
 
             ret = ret.replace(this.createRegExpForLiteral(matchedText), markdown);
-        };
+        }
 
         return ret;
     }
@@ -293,13 +223,13 @@ export class EmbeddingLogic {
         const iterable = ret.matchAll(EmbeddingLogic.projectRegExp);
         const matches = Array.from(iterable);
         for (let match of matches) {
-            const matchedText = match[0]; // matched text
+            const matchedText = match[0];
 
             if (!match[1] || !match[2])
                 throw new Error(`Invalid project format!  Expected /${EmbeddingLogic.projectRegExp.source}/g.  Received '${match[0]}'.`);
 
-            const keyName = match[1]; // group 1: value's key
-            const fileName = match[2]; // group 2: file name
+            const keyName = match[1];
+            const fileName = match[2];
 
             const token = await AuthService.getToken();
             const aiciFile = await AiciService.project(token, fileName);
@@ -319,24 +249,16 @@ export class EmbeddingLogic {
             markdown += "\n";
 
             ret = ret.replace(this.createRegExpForLiteral(matchedText), markdown);
-        };
+        }
 
         return ret;
     }
-    /**
-     * Creates a regular expression for literal text, escaping special characters.
-     * @param literal The literal text to escape.
-     * @returns A regular expression that matches the literal text.
-     */
+
     private createRegExpForLiteral(literal: string): RegExp {
         const target = literal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         return new RegExp(target, "g");
     }
 
-    /**
-     * Generates the markdown completions from completed messages.
-     * @returns A string containing markdown formatted completions.
-     */
     public markdownCompletions(): string {
         let ret = "";
 
@@ -375,35 +297,6 @@ export class EmbeddingLogic {
         return ret;
     }
 
-    /**
-     * Generates the markdown saves from file information.
-     * @returns A string containing markdown formatted file information.
-     */
-    public markdownSaves(): string {
-        let ret = "";
-
-        const fileNames = Object.keys(this.fileNameToContents);
-
-        if (fileNames.length > 0)
-            ret += "## Files\n";
-
-        for (let fileName of fileNames) {
-            ret += "\n";
-            ret += "**File name `" + fileName + "`**:\n";
-            ret += "\n";
-            ret += "```\n";
-            ret += this.fileNameToContents[fileName];
-            ret += "\n```\n";
-            ret += "\n";
-        }
-
-        return ret;
-    }
-
-    /**
-     * Generates the markdown values from stored values.
-     * @returns A string containing markdown formatted values.
-     */
     public markdownValues(): string {
         let ret = "";
 

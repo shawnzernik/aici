@@ -23,27 +23,16 @@ import { PromptService } from "../services/PromptService";
 
 interface Props { }
 
-/**
- * Interface for component state.
- */
 interface State extends BasePageState {
-    model: PromptDto;            // The current prompt model being edited.
-    messages: AiciMessage[];     // Array of messages in the conversation.
-    output: string;              // Output generated from processing.
-    files: string;               // Files associated with the prompt.
-    values: string;              // Values related to the prompt.
-    status: string;              // Current status of the operation.
-    embeddingLogic: EmbeddingLogic | null; // Instance of EmbeddingLogic for processing.
+    model: PromptDto;
+    messages: AiciMessage[];
+    output: string;
+    values: string;
+    status: string;
+    embeddingLogic: EmbeddingLogic | null;
 }
 
-/**
- * Page component for editing prompts.
- */
 class Page extends BasePage<Props, State> {
-    /**
-     * Constructor for the Page component.
-     * @param props - Component props.
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -57,17 +46,12 @@ class Page extends BasePage<Props, State> {
             },
             messages: [{ role: "user", content: "" }, { role: "assistant", content: "" }],
             output: "",
-            files: "",
             values: "",
             status: "Not started",
             embeddingLogic: null
-        }
+        };
     }
 
-    /**
-     * Lifecycle method that runs after the component has been mounted.
-     * Retrieves prompt data based on GUID from query string.
-     */
     public async componentDidMount(): Promise<void> {
         try {
             await this.events.setLoading(true);
@@ -92,11 +76,7 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Removes a message from the list of messages based on the target index.
-     * @param target - Index of the message to be removed.
-     */
-    private async removeClicked(target: number) {
+    private async removeClicked(target: number): Promise<void> {
         await this.events.setLoading(true);
 
         let newMessages: AiciMessage[] = [];
@@ -117,10 +97,7 @@ class Page extends BasePage<Props, State> {
         await this.events.setLoading(false);
     }
 
-    /**
-     * Saves the current prompt model.
-     */
-    private async saveClicked() {
+    private async saveClicked(): Promise<void> {
         try {
             await this.events.setLoading(true);
 
@@ -137,10 +114,7 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Deletes the current prompt.
-     */
-    private async deleteClicked() {
+    private async deleteClicked(): Promise<void> {
         try {
             await this.events.setLoading(true);
 
@@ -156,10 +130,7 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Suggests a title for the prompt based on chat responses.
-     */
-    private async suggestClicked() {
+    private async suggestClicked(): Promise<void> {
         try {
             await this.events.setLoading(true);
 
@@ -181,12 +152,7 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Appends a new message at a specific index within the chat history.
-     * @param role - The role of the new message sender (user/assistant).
-     * @param index - The index at which to append the new message.
-     */
-    async appendClicked(role: string, index: number) {
+    private async appendClicked(role: string, index: number): Promise<void> {
         try {
             await this.events.setLoading(true);
 
@@ -225,11 +191,7 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Runs a prompt from a specific message index.
-     * @param index - The index of the message to run from.
-     */
-    async runClicked() {
+    public async runClicked(): Promise<void> {
         const embeddingLogic = new EmbeddingLogic(this.state.messages, this.state.model.input);
         try {
             await this.events.setLoading(true);
@@ -243,7 +205,6 @@ class Page extends BasePage<Props, State> {
                 await embeddingLogic.process();
                 await this.updateState({
                     output: embeddingLogic.markdownCompletions(),
-                    files: embeddingLogic.markdownSaves(),
                     values: embeddingLogic.markdownValues(),
                     status: embeddingLogic.status,
                     embeddingLogic: embeddingLogic
@@ -255,13 +216,12 @@ class Page extends BasePage<Props, State> {
                 status: `Done - ${embeddingLogic.status}`,
                 embeddingLogic: embeddingLogic
             });
-            await Dialogue(this, "Done", "We have completed processing the messages!")
+            await Dialogue(this, "Done", "We have completed processing the messages!");
         }
         catch (err) {
             await this.events.setLoading(false);
             await this.updateState({
                 output: embeddingLogic.markdownCompletions(),
-                files: embeddingLogic.markdownSaves(),
                 values: embeddingLogic.markdownValues(),
                 embeddingLogic: embeddingLogic
             });
@@ -272,10 +232,7 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Saves the current processed messages as a dataset.
-     */
-    public async saveDatasetClicked() {
+    public async saveDatasetClicked(): Promise<void> {
         try {
             await this.events.setLoading(true);
 
@@ -285,7 +242,7 @@ class Page extends BasePage<Props, State> {
                 isUploaded: false,
                 json: JSON.stringify(this.state.embeddingLogic.completed),
                 title: this.state.model.title + " " + Date.now().toString()
-            }
+            };
 
             const token = await AuthService.getToken();
             await DatasetService.save(token, dto);
@@ -300,19 +257,24 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Counts the number of lines in a given text.
-     * @param text - The text to count lines in.
-     * @returns The number of lines.
-     */
     private countLines(text: string): number {
         return text.split("\n").length;
     }
 
-    /**
-     * Renders the list of messages in the conversation.
-     * @returns An array of React nodes representing the messages.
-     */
+    private async saveFileClicked(name: string, contents: string) {
+        await this.events.setLoading(true);
+
+        try {
+            const token = await AuthService.getToken();
+            await AiciService.save(token, name, contents);
+            await this.events.setLoading(false);
+        }
+        catch (err) {
+            await ErrorMessage(this, err);
+            await this.events.setLoading(false);
+        }
+    }
+
     private renderMessages(): React.ReactNode[] {
         const messages: React.ReactElement[] = [];
 
@@ -359,10 +321,40 @@ class Page extends BasePage<Props, State> {
         return messages;
     }
 
-    /**
-     * Renders the entire page component.
-     * @returns The rendered page.
-     */
+    public renderFiles(): React.ReactElement {
+        let nodes: React.ReactNode[] = [];
+
+        let md = "## Files\n";
+        nodes.push(<Markdown page={this}>{md}</Markdown>);
+
+        if (this.state.embeddingLogic) {
+            const fileNames = Object.keys(this.state.embeddingLogic.fileNameToContents);
+            for (let fileName of fileNames) {
+                const contents = this.state.embeddingLogic.fileNameToContents[fileName];
+
+                md = "**File name `" + fileName + "`**:\n";
+                nodes.push(<Markdown page={this}>{md}</Markdown>);
+
+                md = "```\n";
+                md += contents;
+                md += "\n```\n";
+                nodes.push(<Markdown page={this}>{md}</Markdown>);
+
+                nodes.push(<FlexRow><Button
+                    label="Save File"
+                    onClick={() => {
+                        this.saveFileClicked(fileName, contents);
+                    }}
+                /></FlexRow>)
+            }
+        }
+
+        return <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1em"
+        }}>{nodes}</div>;
+    }
     public render(): React.ReactNode {
         const messages = this.renderMessages();
 
@@ -424,7 +416,7 @@ class Page extends BasePage<Props, State> {
                             <Heading level={2}>Messages</Heading>
                             {messages}
                         </>,
-                        "Files": <Markdown page={this}>{this.state.files}</Markdown>,
+                        "Files": this.renderFiles(),
                         "Values": <Markdown page={this}>{this.state.values}</Markdown>,
                         "Output": this.state.output
                             ? <>
@@ -446,11 +438,11 @@ class Page extends BasePage<Props, State> {
 window.onload = () => {
     const element = document.getElementById('root');
     const root = createRoot(element);
-    root.render(<Page />)
+    root.render(<Page />);
 };
 
 window.onpageshow = (event) => {
     if (event.persisted) {
         window.location.reload();
     }
-}
+};

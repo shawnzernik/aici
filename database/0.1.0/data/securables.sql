@@ -4,6 +4,7 @@ INSERT INTO "securables" ("guid", "display_name") VALUES
 ('a1f76365-9617-4026-a584-75721d8d951a', 'Aici:Download'),
 ('a2410626-adc1-4e47-b54c-bd2e6a547fbd', 'Aici:Embedding'),
 ('fcdde54a-6f87-480d-97d7-cd456a252f2f', 'Aici:Project'),
+('bea9b42d-6cbd-4846-9afe-4b6c4b777cc1', 'Aici:Save'),
 ('0b23b8f4-8654-4d1a-b9ea-ef5bece463aa', 'Aici:Train'),
 ('828134c2-ae24-46bf-87b8-55efaa4f41af', 'Aici:Upload'),
 ('d8a01e3b-d76e-4763-9c68-de36d51ea965', 'Dataset:Delete'),
