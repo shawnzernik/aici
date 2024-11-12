@@ -284,7 +284,7 @@ class Page extends BasePage<Props, State> {
                 includeInTraining: false,
                 isUploaded: false,
                 json: JSON.stringify(this.state.embeddingLogic.completed),
-                title: Date.now().toString()
+                title: this.state.model.title + " " + Date.now().toString()
             }
 
             const token = await AuthService.getToken();

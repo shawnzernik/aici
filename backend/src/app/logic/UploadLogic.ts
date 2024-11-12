@@ -46,24 +46,24 @@ export class UploadLogic {
      */
     public static async download(ds: EntitiesDataSource, body: AiciFile): Promise<AiciFile> {
         if (!body.file || body.file === "undefined")
-            throw new Error("You must provide a file name!");
+            throw new Error("You must provide a download file name!");
 
         const file = await UploadLogic.downloadVector(ds, Config.qdrantNameCollection, body.file);
         if (file)
             return file;
 
-        throw new Error(`Could not locate file or embedding by name '${body.file}'!`);
+        throw new Error(`Could not download by name '${body.file}'!`);
     }
 
     public static async project(ds: EntitiesDataSource, body: AiciFile): Promise<AiciFile> {
         if (!body.file || body.file === "undefined")
-            throw new Error("You must provide a file name!");
+            throw new Error("You must provide a project file name!");
 
         const file = await UploadLogic.downloadFile(ds, body.file);
         if (file)
             return file;
 
-        throw new Error(`Could not locate file or embedding by name '${body.file}'!`);
+        throw new Error(`Could not locate project file by name '${body.file}'!`);
     }
 
     /**

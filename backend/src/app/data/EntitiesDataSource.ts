@@ -38,6 +38,7 @@ export class EntitiesDataSource extends TreEntitiesDataSource {
                 SettingEntity,
                 LogEntity,
 
+                // add app entities here
                 DatasetEntity,
                 FinetuneEntity,
                 PromptEntity

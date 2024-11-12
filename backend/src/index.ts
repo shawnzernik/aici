@@ -30,6 +30,7 @@ const app = new WebApp((logger: Logger, app: express.Express) => {
     new ListFilterService(logger, app);
     new SettingService(logger, app);
 
+    // add app routes here
     new AiciService(logger, app);
     new DatasetService(logger, app);
     new FinetuneService(logger, app);
