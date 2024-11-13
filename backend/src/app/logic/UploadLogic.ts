@@ -104,7 +104,7 @@ export class UploadLogic {
 
             const directory = path.dirname(filename);
             if (!fs.existsSync(directory))
-                fs.mkdirSync(directory);
+                fs.mkdirSync(directory, { recursive: true });
 
             fs.writeFileSync(filename, body.contents, { encoding: "utf8" });
         }
