@@ -20,6 +20,7 @@ import { DatasetDto } from "common/src/app/models/DatasetDto";
 import { DatasetService } from "../services/DatasetService";
 import { AuthService } from "../../tre/services/AuthService";
 import { PromptService } from "../services/PromptService";
+import { Checkbox } from "../../tre/components/Checkbox";
 
 interface Props { }
 
@@ -30,6 +31,7 @@ interface State extends BasePageState {
     values: string;
     status: string;
     embeddingLogic: EmbeddingLogic | null;
+    saveFiles: boolean;
 }
 
 class Page extends BasePage<Props, State> {
@@ -48,7 +50,8 @@ class Page extends BasePage<Props, State> {
             output: "",
             values: "",
             status: "Not started",
-            embeddingLogic: null
+            embeddingLogic: null,
+            saveFiles: false
         };
     }
 
@@ -209,14 +212,29 @@ class Page extends BasePage<Props, State> {
                     status: embeddingLogic.status,
                     embeddingLogic: embeddingLogic
                 });
-                await this.events.setLoading(false);
             }
 
             await this.updateState({
                 status: `Done - ${embeddingLogic.status}`,
                 embeddingLogic: embeddingLogic
             });
-            await Dialogue(this, "Done", "We have completed processing the messages!");
+
+            if (!this.state.saveFiles) {
+                await this.events.setLoading(false);
+                await Dialogue(this, "Done", "We have completed processing the messages!");
+                return;
+            }
+
+            await this.events.setLoading(true);
+
+            const token = await AuthService.getToken();
+            for (const filename in this.state.embeddingLogic.fileNameToContents) {
+                const contents = this.state.embeddingLogic.fileNameToContents[filename];
+                await AiciService.save(token, filename, contents);
+            }
+
+            await this.events.setLoading(false);
+            await Dialogue(this, "Files Saved", "The files have been saved!");
         }
         catch (err) {
             await this.events.setLoading(false);
@@ -384,12 +402,20 @@ class Page extends BasePage<Props, State> {
                             }}
                         />
                     </Field>
-                    <Field>
+                    <Field label="Save Files">
+                        <Checkbox
+                            checked={this.state.saveFiles}
+                            onChange={(value) => {
+                                this.updateState({ saveFiles: value });
+                            }}
+                        />
+                    </Field>
+                    <FlexRow>
                         <Button label="Suggest Name" onClick={this.suggestClicked.bind(this)} />
                         <Button label="Run" onClick={this.runClicked.bind(this)} />
                         <Button label="Save" onClick={this.saveClicked.bind(this)} />
                         <Button label="Delete" onClick={this.deleteClicked.bind(this)} />
-                    </Field>
+                    </FlexRow>
 
                     <Heading level={2}>Input</Heading>
                     <Field label="Input">
