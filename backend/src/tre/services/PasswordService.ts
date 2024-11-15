@@ -1,24 +1,16 @@
 import express from "express";
-import { EntitiesDataSource } from "../data/EntitiesDataSource";
+import { Logger } from "../Logger";
 import { BaseService } from "./BaseService";
+import { EntitiesDataSource } from "../data/EntitiesDataSource";
 import { PasswordDto } from "common/src/tre/models/PasswordDto";
 import { PasswordEntity } from "../data/PasswordEntity";
-import { Logger } from "../Logger";
 import { PasswordRepository } from "../data/PasswordRepository";
 
-/**
- * Service class for handling password-related operations.
- */
 export class PasswordService extends BaseService {
     protected constructDataSource(): EntitiesDataSource {
         return new EntitiesDataSource();
     }
 
-    /**
-     * Constructor for the PasswordService class.
-     * @param logger - Logger instance for logging.
-     * @param app - Express application instance.
-     */
     public constructor(logger: Logger, app: express.Express) {
         super();
 
@@ -30,13 +22,6 @@ export class PasswordService extends BaseService {
         app.delete("/api/v0/password/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
     }
 
-    /**
-     * Retrieves a password entry by its GUID.
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     * @returns Promise resolving to a PasswordDto object or null if not found.
-     */
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<PasswordDto | null> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Password:Read", req, ds);
@@ -46,13 +31,6 @@ export class PasswordService extends BaseService {
         return ret;
     }
 
-    /**
-     * Retrieves a list of all password entries.
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     * @returns Promise resolving to an array of PasswordDto objects.
-     */
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<PasswordDto[]> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Password:List", req, ds);
@@ -61,13 +39,6 @@ export class PasswordService extends BaseService {
         return ret;
     }
 
-    /**
-     * Saves a new password entry.
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     * @returns Promise resolving to void.
-     */
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Password:Save", req, ds);
@@ -77,13 +48,6 @@ export class PasswordService extends BaseService {
         await new PasswordRepository(ds).save([entity]);
     }
 
-    /**
-     * Deletes a password entry by its GUID.
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     * @returns Promise resolving to void.
-     */
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Password:Delete", req, ds);

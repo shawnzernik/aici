@@ -6,19 +6,11 @@ import { GroupEntity } from "../data/GroupEntity";
 import { Logger } from "../Logger";
 import { GroupRepository } from "../data/GroupRepository";
 
-/**
- * Service for handling group-related operations.
- */
 export class GroupService extends BaseService {
     protected constructDataSource(): EntitiesDataSource {
         return new EntitiesDataSource();
     }
 
-    /**
-     * Creates an instance of GroupService.
-     * @param logger - Logger instance for logging purposes.
-     * @param app - Express application instance.
-     */
     public constructor(logger: Logger, app: express.Express) {
         super();
 
@@ -30,13 +22,6 @@ export class GroupService extends BaseService {
         app.delete("/api/v0/group/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
     }
 
-    /**
-     * Retrieves a group by its GUID.
-     * @param logger - Logger instance for logging purposes.
-     * @param req - Express request object containing the group GUID in the parameters.
-     * @param ds - Data source for accessing entities.
-     * @returns Promise resolving to a GroupDto object or null if not found.
-     */
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<GroupDto | null> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Group:Read", req, ds);
@@ -46,13 +31,6 @@ export class GroupService extends BaseService {
         return ret;
     }
 
-    /**
-     * Retrieves the list of all groups.
-     * @param logger - Logger instance for logging purposes.
-     * @param req - Express request object.
-     * @param ds - Data source for accessing entities.
-     * @returns Promise resolving to an array of GroupDto objects.
-     */
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<GroupDto[]> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Group:List", req, ds);
@@ -61,13 +39,6 @@ export class GroupService extends BaseService {
         return ret;
     }
 
-    /**
-     * Saves a new group entity.
-     * @param logger - Logger instance for logging purposes.
-     * @param req - Express request object containing the group data in the body.
-     * @param ds - Data source for accessing entities.
-     * @returns Promise resolving to void.
-     */
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Group:Save", req, ds);
@@ -77,13 +48,6 @@ export class GroupService extends BaseService {
         await new GroupRepository(ds).save([entity]);
     }
 
-    /**
-     * Deletes a group by its GUID.
-     * @param logger - Logger instance for logging purposes.
-     * @param req - Express request object containing the group GUID in the parameters.
-     * @param ds - Data source for accessing entities.
-     * @returns Promise resolving to void.
-     */
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Group:Delete", req, ds);

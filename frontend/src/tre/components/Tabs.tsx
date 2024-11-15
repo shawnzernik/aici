@@ -2,21 +2,11 @@ import * as React from "react";
 import { Dictionary } from "common/src/tre/Dictionary";
 import { TabsTheme } from "./TabsTheme";
 
-// Interface for component props
 interface Props {
-    /** 
-     * A dictionary where keys are tab labels and values are React elements. 
-     * Each entry represents a tab.
-     */
     components: Dictionary<React.ReactElement>;
 }
 
-// Interface for component state
 interface State {
-    /** 
-     * The label of the currently active tab. 
-     * Determines which component is visible.
-     */
     activeLabel: string;
 }
 
@@ -25,12 +15,6 @@ export class Tabs extends React.Component<Props, State> {
         this.setState({ activeLabel: name });
     }
 
-    /** 
-     * Creates an instance of Tabs. 
-     * Initializes the state with the first tab label.
-     * @param props - The props object containing component data.
-     * @throws Error if no tab components are provided.
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -42,11 +26,6 @@ export class Tabs extends React.Component<Props, State> {
         this.state = { activeLabel: labels[0] };
     }
 
-    /** 
-     * Renders the component. 
-     * Creates tab labels and sets the active tab style.
-     * @returns The JSX representation of the Tabs component.
-     */
     public render(): React.ReactNode {
         const labelDivs: React.ReactElement[] = [];
         const labels = Object.keys(this.props.components);

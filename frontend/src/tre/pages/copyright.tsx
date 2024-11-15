@@ -6,21 +6,9 @@ import { Markdown } from "../../tre/components/Markdown";
 
 interface Props { }
 
-/** 
- * State interface that extends BasePageState 
- */
 interface State extends BasePageState { }
 
-/**
- * Page class that extends BasePage
- * Represents the copyright page
- */
 class Page extends BasePage<Props, State> {
-    /** 
-     * Render method
-     * Renders the Navigation component with the Markdown content
-     * @returns React.ReactNode 
-     */
     public render(): React.ReactNode {
         return (
             <Navigation
@@ -51,21 +39,12 @@ along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
     }
 }
 
-/** 
- * Window onload event 
- * Initializes the root element for React rendering 
- */
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />)
 };
 
-/** 
- * Window onpageshow event 
- * Reloads the page if it was restored from the cache 
- * @param event The event object 
- */
 window.onpageshow = (event) => {
     if (event.persisted) {
         window.location.reload();

@@ -6,19 +6,11 @@ import { SettingEntity } from "../data/SettingEntity";
 import { Logger } from "../Logger";
 import { SettingRepository } from "../data/SettingRepository";
 
-/**
- * Service class for handling settings-related operations.
- */
 export class SettingService extends BaseService {
     protected constructDataSource(): EntitiesDataSource {
         return new EntitiesDataSource();
     }
 
-    /**
-     * Constructor for SettingService.
-     * @param logger - Logger instance for logging.
-     * @param app - Express application instance for routing.
-     */
     public constructor(logger: Logger, app: express.Express) {
         super();
 
@@ -30,13 +22,6 @@ export class SettingService extends BaseService {
         app.delete("/api/v0/setting/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
     }
 
-    /**
-     * Retrieves a setting by its GUID.
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance for database operations.
-     * @returns SettingDto object or null if not found.
-     */
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<SettingDto | null> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Setting:Read", req, ds);
@@ -46,13 +31,6 @@ export class SettingService extends BaseService {
         return ret;
     }
 
-    /**
-     * Retrieves a list of settings.
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance for database operations.
-     * @returns Array of SettingDto objects.
-     */
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<SettingDto[]> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Setting:List", req, ds);
@@ -61,13 +39,6 @@ export class SettingService extends BaseService {
         return ret;
     }
 
-    /**
-     * Saves a new setting.
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance for database operations.
-     * @returns Void.
-     */
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Setting:Save", req, ds);
@@ -77,13 +48,6 @@ export class SettingService extends BaseService {
         await new SettingRepository(ds).save([entity]);
     }
 
-    /**
-     * Deletes a setting by its GUID.
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance for database operations.
-     * @returns Void.
-     */
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Setting:Delete", req, ds);

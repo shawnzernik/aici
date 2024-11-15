@@ -11,39 +11,14 @@ import { PasswordRepository } from "../data/PasswordRepository";
 import { SecurableRepository } from "../data/SecurableRepository";
 import { UserRepository } from "../data/UserRepository";
 
-/**
- * Handles authentication logic, including user login and token management.
- */
 export class AuthLogic {
-    /**
-     * Message displayed when a login attempt is invalid.
-     */
     private static invalidLoginMsg: string = "Invalid login!";
-
-    /**
-     * Message displayed when a token is invalid.
-     */
     private static invalidTokenMsg: string = "Invalid token!";
-
-    /**
-     * The authenticated user's data transfer object.
-     */
     public user: UserDto | undefined;
-
-    /**
-     * The list of securable permissions associated with the user.
-     */
     public securables: SecurableDto[] | undefined;
 
-    /**
-     * Private constructor to prevent direct instantiation.
-     */
     private constructor() { }
 
-    /**
-     * Generates a JWT token for the authenticated user.
-     * @returns The signed JWT token as a string.
-     */
     public tokenize(): string {
         const key = fs.readFileSync(Config.jwtPrivateKeyFile, { encoding: "utf8" });
         const token = new JwtToken(this);
@@ -51,12 +26,6 @@ export class AuthLogic {
         return ret;
     }
 
-    /**
-     * Performs an anonymous login using the predefined anonymous user.
-     * @param eds The data source for accessing repositories.
-     * @returns A promise that resolves to an instance of AuthLogic upon successful login.
-     * @throws Will throw an error if the anonymous user is not found.
-     */
     public static async anonymousLogin(eds: EntitiesDataSource): Promise<AuthLogic> {
         const user = await new UserRepository(eds).findOneBy({ emailAddress: "anonymous@localhost" });
         if (!user)
@@ -66,14 +35,6 @@ export class AuthLogic {
         return ret;
     }
 
-    /**
-     * Performs a login using email and password credentials.
-     * @param eds The data source for accessing repositories.
-     * @param email The user's email address.
-     * @param password The user's password.
-     * @returns A promise that resolves to an instance of AuthLogic upon successful login.
-     * @throws Will throw an error if the login credentials are invalid.
-     */
     public static async passwordLogin(eds: EntitiesDataSource, email: string, password: string): Promise<AuthLogic> {
         const user = await new UserRepository(eds).findOneBy({ emailAddress: email });
         if (!user)
@@ -99,12 +60,6 @@ export class AuthLogic {
         return ret;
     }
 
-    /**
-     * Creates an instance of AuthLogic with the provided user and loads their securables.
-     * @param eds The data source for accessing repositories.
-     * @param user The user entity to create the AuthLogic instance for.
-     * @returns A promise that resolves to an instance of AuthLogic.
-     */
     private static async createLogic(eds: EntitiesDataSource, user: UserEntity): Promise<AuthLogic> {
         const ret = new AuthLogic();
         ret.user = user;
@@ -112,12 +67,6 @@ export class AuthLogic {
         return ret;
     }
 
-    /**
-     * Performs a login using a JWT token.
-     * @param token The JWT token to validate and extract user information from.
-     * @returns A promise that resolves to an instance of AuthLogic upon successful token validation.
-     * @throws Will throw an error if the token is invalid or improperly formatted.
-     */
     public static async tokenLogin(token: string): Promise<AuthLogic> {
         const key = fs.readFileSync(Config.jwtPrivateKeyFile, { encoding: "utf8" });
         let payload = null;
@@ -135,12 +84,6 @@ export class AuthLogic {
         return ret;
     }
 
-    /**
-     * Loads the securable permissions allowed for a specific user.
-     * @param eds The data source for accessing repositories.
-     * @param user The user DTO containing user information.
-     * @returns A promise that resolves to an array of securable DTOs.
-     */
     private static async loadAllowedSecurablesForUser(eds: EntitiesDataSource, user: UserDto): Promise<SecurableDto[]> {
         const ret = await new SecurableRepository(eds)
             .createQueryBuilder("s")

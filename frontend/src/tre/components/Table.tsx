@@ -13,16 +13,8 @@ interface Props {
 }
 interface State { }
 
-/**
- * Table component to display a list of items in a formatted table.
- * It supports editing and adding items through provided URLs.
- */
 export class Table extends React.Component<Props, State> {
 
-    /**
-     * Render the table component.
-     * @returns React.ReactNode
-     */
     public render(): React.ReactNode {
         if (!this.props.items)
             return;

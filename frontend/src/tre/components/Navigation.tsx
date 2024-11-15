@@ -12,41 +12,25 @@ import { AuthLogic } from "../logic/AuthLogic";
 import { SecurableDto } from "common/src/tre/models/SecurableDto";
 import { BasePage, BasePageState } from "./BasePage";
 
-/**
- * Interface for the events that can be sent from the NavigationMessage component.
- */
+
 export interface NavigationMessageEvents {
     setLoading: (value: boolean) => Promise<void>;
     setMessage: (value: Message) => Promise<void>;
 }
 
-/**
- * Interface for the state of the NavigationMessage component.
- */
+
 export interface NavigationMessageState {
     loading: boolean;
     message?: Message;
 }
 
-/**
- * Handles error messaging for the application.
- * @param page The current page component.
- * @param err The error that occurred.
- * @returns A promise that resolves when the user acknowledges the error.
- */
+
 export function ErrorMessage<P, S extends BasePageState>(page: BasePage<P, S>, err: any): Promise<string | void> {
     const msg = typeof (err) === "string" ? err : err instanceof Error ? err.message : `${err}`;
     return Dialogue<P, S>(page, "Error", msg, ["OK"]);
 }
 
-/**
- * Displays a dialog message to the user.
- * @param page The current page component.
- * @param title The title of the dialog.
- * @param msg The message to display.
- * @param buttons Optional array of button labels.
- * @returns A promise that resolves when the user clicks a button.
- */
+
 export function Dialogue<P, S extends BasePageState>(page: BasePage<P, S>, title: string, msg: string, buttons?: string[]): Promise<string | void> {
     let buttonsToUse = ["OK"];
     if (buttons)
@@ -83,23 +67,14 @@ interface State {
     activeLeftMenuGuid: string;
 }
 
-/**
- * Navigation component that displays the top and left menus.
- */
+
 export class Navigation extends React.Component<Props, State> {
-    /** Root menus available to the user */
     private rootMenus: MenuDto[] = [];
-    /** Child menus indexed by parent GUID */
     private childMenus: Dictionary<MenuDto[]> = {};
-    /** Securable items associated with the user */
     private securables: Dictionary<SecurableDto> = {};
-    /** Authentication logic instance */
     private auth: AuthLogic;
 
-    /**
-     * Constructs the Navigation component.
-     * @param props The component props.
-     */
+
     public constructor(props: Props) {
         super(props);
 
@@ -112,10 +87,7 @@ export class Navigation extends React.Component<Props, State> {
         };
     }
 
-    /**
-     * Lifecycle method called after the component is mounted.
-     * Fetches the menus and user permissions.
-     */
+
     public async componentDidMount(): Promise<void> {
         this.props.events.setLoading(true);
 
@@ -161,10 +133,7 @@ export class Navigation extends React.Component<Props, State> {
         this.props.events.setLoading(false);
     }
 
-    /**
-     * Renders the component.
-     * @returns The rendered component.
-     */
+
     public render(): React.ReactNode {
         if (!this.props.state) {
             return;

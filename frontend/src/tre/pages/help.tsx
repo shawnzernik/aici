@@ -7,16 +7,7 @@ import { Markdown } from "../../tre/components/Markdown";
 interface Props { }
 interface State extends BasePageState { }
 
-/**
- * Help Page Component
- * Extends BasePage to inherit shared functionality and state management
- */
 class Page extends BasePage<Props, State> {
-    /**
-     * Render method
-     * Constructs the JSX to be returned for the component
-     * @returns JSX element representing the Help page
-     */
     public render(): React.ReactNode {
         return (
             <Navigation
@@ -44,21 +35,12 @@ The system provides two levels of navigation: the top menu, and children menu it
     }
 }
 
-/**
- * Window onload event
- * Initializes the React application by rendering the Help Page component
- */
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />)
 };
 
-/**
- * Window onpageshow event
- * Determines whether to reload the page based on the event's persisted property
- * @param event The event object associated with the onpageshow event
- */
 window.onpageshow = (event) => {
     if (event.persisted) {
         window.location.reload();

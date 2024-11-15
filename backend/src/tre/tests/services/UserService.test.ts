@@ -1,10 +1,10 @@
-import https from 'https';
+import https from "https";
 import fetch from "node-fetch";
-import { UserDto } from 'common/src/tre/models/UserDto';
-import { Config } from '../../../Config';
-import { EntitiesDataSource } from '../../data/EntitiesDataSource';
-import { UserEntity } from '../../data/UserEntity';
-import { UserRepository } from '../../data/UserRepository';
+import { UserDto } from "common/src/tre/models/UserDto";
+import { Config } from "../../../Config";
+import { EntitiesDataSource } from "../../data/EntitiesDataSource";
+import { UserEntity } from "../../data/UserEntity";
+import { UserRepository } from "../../data/UserRepository";
 
 jest.setTimeout(Config.jestTimeoutSeconds * 1000);
 
@@ -35,7 +35,7 @@ describe("UserService", () => {
             throw new Error(`Response: ${response.status} - ${response.statusText} - ${obj.error}`);
 
         if (!obj["data"])
-            throw new Error("Return from login did not provide a 'data' with the token!");
+            throw new Error("Return from login did not provide a \"data\" with the token!");
 
         token = obj["data"] as string;
     }, Config.jestTimeoutSeconds * 1000);

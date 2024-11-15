@@ -8,27 +8,13 @@ interface Props {
     style?: CSSProperties;
 }
 
-/**
- * Component State Interface
- */
 interface State { }
 
-/**
- * FlexRow Component
- */
 export class FlexRow extends React.Component<Props, State> {
-    /**
-     * Constructor for FlexRow component
-     * @param props - Component props
-     */
     public constructor(props: Props) {
         super(props);
     }
 
-    /**
-     * Renders the FlexRow component
-     * @returns React.ReactNode
-     */
     public render(): React.ReactNode {
         let style: CSSProperties = { ...FlexRowTheme, ...this.props.style };
         if (this.props.gap)

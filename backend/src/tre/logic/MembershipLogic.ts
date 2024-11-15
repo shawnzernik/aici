@@ -1,30 +1,13 @@
 import { MembershipDto } from "common/src/tre/models/MembershipDto";
 import { EntitiesDataSource } from "../data/EntitiesDataSource";
 
-/**
- * Handles logic related to group and user memberships.
- */
 export class MembershipLogic {
-    /**
-     * The membership entity containing membership details.
-     */
     private entity: MembershipDto;
 
-    /**
-     * Creates an instance of MembershipLogic.
-     * @param entity The membership data transfer object.
-     */
     public constructor(entity: MembershipDto) {
         this.entity = entity;
     }
 
-    /**
-     * Retrieves all memberships for a specific group.
-     * @param eds The data source for executing SQL queries.
-     * @param guid The unique identifier of the group.
-     * @returns A promise that resolves to an array of MembershipDto objects representing the group's memberships.
-     * @throws Will throw an error if the SQL query fails.
-     */
     public static async getGroupMemberships(eds: EntitiesDataSource, guid: string): Promise<MembershipDto[]> {
         const sql = `
 SELECT
@@ -57,13 +40,6 @@ ORDER BY
         }
     }
 
-    /**
-     * Retrieves all memberships for a specific user.
-     * @param eds The data source for executing SQL queries.
-     * @param guid The unique identifier of the user.
-     * @returns A promise that resolves to an array of MembershipDto objects representing the user's memberships.
-     * @throws Will throw an error if the SQL query fails.
-     */
     public static async getUserMemberships(eds: EntitiesDataSource, guid: string): Promise<MembershipDto[]> {
         const sql = `
 SELECT

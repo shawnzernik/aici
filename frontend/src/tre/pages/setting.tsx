@@ -18,14 +18,7 @@ interface State extends BasePageState {
     model: SettingDto;
 }
 
-/**
- * Defines the Page component for editing settings.
- */
 class Page extends BasePage<Props, State> {
-    /**
-     * Constructs the Page component.
-     * @param props - The component props.
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -39,10 +32,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Lifecycle method that is called after the component is mounted.
-     * Fetches the setting data based on the guid in the query string.
-     */
     public async componentDidMount(): Promise<void> {
         await this.events.setLoading(true);
 
@@ -59,10 +48,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Handles the save button click event.
-     * Saves the current setting model to the server.
-     */
     public async saveClicked() {
         this.events.setLoading(true);
         try {
@@ -77,10 +62,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Renders the component.
-     * @returns The rendered component.
-     */
     public render(): React.ReactNode {
         return (
             <Navigation
@@ -117,7 +98,7 @@ class Page extends BasePage<Props, State> {
 }
 
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />)
 };

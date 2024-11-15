@@ -11,13 +11,8 @@ import { FlexRow } from "../../tre/components/FlexRow";
 import { UserDto } from "common/src/tre/models/UserDto";
 import { AuthService } from "../services/AuthService";
 
-/**
- * Properties required by Account page.
- */
 interface Props { }
-/**
- * State used by Account properties.
- */
+
 interface State extends BasePageState {
     model: UserDto,
     currentPassword: string,
@@ -25,11 +20,7 @@ interface State extends BasePageState {
     confirmPassword: string
 }
 
-/** 
- * Account page component class
- */
 class Page extends BasePage<Props, State> {
-    /** Constructor initializes state properties */
     public constructor(props: Props) {
         super(props);
 
@@ -47,9 +38,6 @@ class Page extends BasePage<Props, State> {
         };
     }
 
-    /** 
-     * Lifecycle method called after component mounts 
-     */
     public async componentDidMount(): Promise<void> {
         await this.events.setLoading(true);
 
@@ -63,9 +51,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /** 
-     * Saves the user information 
-     */
     public async saveClicked(): Promise<void> {
         await this.events.setLoading(true);
 
@@ -80,9 +65,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /** 
-     * Changes the user's password 
-     */
     public async changeClicked(): Promise<void> {
         await this.events.setLoading(true);
 
@@ -96,9 +78,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /** 
-     * Renders the account page 
-     */
     public render(): React.ReactNode {
         return (
             <Navigation
@@ -169,16 +148,13 @@ class Page extends BasePage<Props, State> {
         );
     }
 
-    /** 
-     * Sets up the component for rendering 
-     */
     public async setUpComponent(): Promise<void> {
         await this.componentDidMount();
     }
 }
 
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />)
 };

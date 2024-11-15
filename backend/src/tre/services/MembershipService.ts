@@ -7,20 +7,11 @@ import { MembershipLogic } from "../logic/MembershipLogic";
 import { Logger } from "../Logger";
 import { MembershipRepository } from "../data/MembershipsRepository";
 
-/**
- * Service class for managing memberships.
- */
 export class MembershipService extends BaseService {
     protected constructDataSource(): EntitiesDataSource {
         return new EntitiesDataSource();
     }
 
-    /**
-     * Constructor for MembershipService.
-     * 
-     * @param logger - Logger instance for logging.
-     * @param app - Express application instance.
-     */
     public constructor(logger: Logger, app: express.Express) {
         super();
 
@@ -35,14 +26,6 @@ export class MembershipService extends BaseService {
         app.get("/api/v0/user/:guid/memberships", (req, resp) => { this.methodWrapper(req, resp, this.getUserMemberships) });
     }
 
-    /**
-     * Retrieves memberships for a specific group.
-     * 
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     * @returns Array of Membership DTOs.
-     */
     public async getGroupMemberships(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<MembershipDto[]> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Membership:Read", req, ds);
@@ -52,14 +35,6 @@ export class MembershipService extends BaseService {
         return ret;
     }
 
-    /**
-     * Retrieves memberships for a specific user.
-     * 
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     * @returns Array of Membership DTOs.
-     */
     public async getUserMemberships(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<MembershipDto[]> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Membership:Read", req, ds);
@@ -69,14 +44,6 @@ export class MembershipService extends BaseService {
         return ret;
     }
 
-    /**
-     * Retrieves a specific membership by GUID.
-     * 
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     * @returns Membership DTO or null if not found.
-     */
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<MembershipDto | null> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Membership:Read", req, ds);
@@ -86,14 +53,6 @@ export class MembershipService extends BaseService {
         return ret;
     }
 
-    /**
-     * Retrieves a list of all memberships.
-     * 
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     * @returns Array of Membership DTOs.
-     */
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<MembershipDto[]> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Membership:List", req, ds);
@@ -102,13 +61,6 @@ export class MembershipService extends BaseService {
         return ret;
     }
 
-    /**
-     * Saves a new membership entity.
-     * 
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     */
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Membership:Save", req, ds);
@@ -118,13 +70,6 @@ export class MembershipService extends BaseService {
         await new MembershipRepository(ds).save([entity]);
     }
 
-    /**
-     * Deletes a specific membership by GUID.
-     * 
-     * @param logger - Logger instance for logging.
-     * @param req - Express request object.
-     * @param ds - Data source instance.
-     */
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurity(logger, "Membership:Delete", req, ds);

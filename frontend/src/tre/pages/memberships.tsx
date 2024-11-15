@@ -23,28 +23,18 @@ import { GroupLogic } from "common/src/tre/logic/GroupLogic";
 
 interface Props { }
 
-/** 
- * Defines the component for managing memberships. 
- */
 interface State extends BasePageState {
-    userMap: Dictionary<UserDto>;           /** Map of user GUIDs to user DTOs. */
-    userOptions: React.ReactElement[];       /** Options for the user select dropdown. */
-    groupMap: Dictionary<GroupDto>;          /** Map of group GUIDs to group DTOs. */
-    groupOptions: React.ReactElement[];      /** Options for the group select dropdown. */
-    models: MembershipDto[];                 /** List of memberships. */
-    selectedUser: string | null;             /** GUID of the selected user. */
-    selectedGroup: string | null;            /** GUID of the selected group. */
+    userMap: Dictionary<UserDto>;
+    userOptions: React.ReactElement[];
+    groupMap: Dictionary<GroupDto>;
+    groupOptions: React.ReactElement[];
+    models: MembershipDto[];
+    selectedUser: string | null;
+    selectedGroup: string | null;
 }
 
-/** 
- * Page component for memberships. 
- */
 class Page extends BasePage<Props, State> {
 
-    /** 
-     * Constructor for the Page component. 
-     * @param props - Constructor properties. 
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -60,10 +50,6 @@ class Page extends BasePage<Props, State> {
         };
     }
 
-    /** 
-     * Lifecycle method called after the component is mounted. 
-     * Loads users and groups into the component state. 
-     */
     public async componentDidMount(): Promise<void> {
         await this.events.setLoading(true);
 
@@ -99,9 +85,6 @@ class Page extends BasePage<Props, State> {
         await this.events.setLoading(false);
     }
 
-    /** 
-     * Loads memberships for the selected user or group. 
-     */
     private async loadClicked() {
         if (!this.state.selectedGroup && !this.state.selectedUser) {
             await Dialogue(this, "Notice", "No selections for user or group were made!", ["OK"]);
@@ -123,9 +106,6 @@ class Page extends BasePage<Props, State> {
         await this.events.setLoading(false);
     }
 
-    /** 
-     * Saves the current memberships state. 
-     */
     private async saveClicked() {
         await this.events.setLoading(true);
 
@@ -142,10 +122,6 @@ class Page extends BasePage<Props, State> {
         await this.events.setLoading(false);
     }
 
-    /** 
-     * Renders the component. 
-     * @returns The JSX for the component. 
-     */
     public render(): React.ReactNode {
         const rows: React.ReactElement[] = [];
         this.state.models.forEach((model) => {
@@ -220,7 +196,7 @@ class Page extends BasePage<Props, State> {
 }
 
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />)
 };

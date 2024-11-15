@@ -26,29 +26,17 @@ import { ListFilterEditList } from "../subpages/ListFilterEditList";
 
 interface Props { }
 
-/**
- * Page component for managing lists.
- */
 interface State extends BasePageState {
     model: ListDto;
     filters: ListFilterDto[];
     showAddFilterButton: boolean;
 }
 
-/**
- * Page class for managing the list creation and editing.
- */
 class Page extends BasePage<Props, State> {
-    /** Top menu options for the select component */
     private topMenuOptions: React.ReactElement[] = [];
 
-    /** Left menu options for the select component */
     private leftMenuOptions: React.ReactElement[] = [];
 
-    /**
-     * Creates an instance of Page.
-     * @param props - Component props
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -69,17 +57,12 @@ class Page extends BasePage<Props, State> {
         };
     }
 
-    /**
-     * Lifecycle method that is called after the component is mounted.
-     */
     public async componentDidMount(): Promise<void> {
         this.events.setLoading(true);
 
-        // load all menus
         const token = await AuthService.getToken();
         let menus = await MenuService.list(token);
 
-        // create & organize top menu data
         const topMenuDictionary: Dictionary<MenuDto> = {};
         const topMenuList: MenuDto[] = [];
         menus.forEach((menu) => {
@@ -91,7 +74,6 @@ class Page extends BasePage<Props, State> {
         });
         topMenuList.sort(MenuLogic.compareDisplay);
 
-        // create & organize left menu data
         const leftMenuList: MenuDto[] = [];
         menus.forEach((menu) => {
             if (!menu.parentsGuid)
@@ -102,7 +84,6 @@ class Page extends BasePage<Props, State> {
         });
         leftMenuList.sort(MenuLogic.compareDisplay);
 
-        // load select options
         this.topMenuOptions.push(<SelectOption key="" display="" value="" />);
         topMenuList.forEach((menu, index) => {
             this.topMenuOptions.push(<SelectOption key={menu.guid} display={menu.display} value={menu.guid} />);
@@ -112,14 +93,12 @@ class Page extends BasePage<Props, State> {
             this.leftMenuOptions.push(<SelectOption key={menu.guid} display={menu.display} value={menu.guid} />);
         });
 
-        // if no guid provided, skip loading list item
         const guid = this.queryString("guid");
         if (!guid) {
             this.events.setLoading(false);
             return;
         }
 
-        // load models
         const model = await ListService.get(token, guid);
         const filters = await ListFilterService.listByParentList(token, guid);
         await this.updateState({
@@ -130,9 +109,6 @@ class Page extends BasePage<Props, State> {
         this.events.setLoading(false);
     }
 
-    /**
-     * Handles the save button click event.
-     */
     public async saveClicked(filterToDelete?: ListFilterDto) {
         this.events.setLoading(true);
         try {
@@ -158,9 +134,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Handles the delete button click event.
-     */
     public async deleteClicked() {
         this.events.setLoading(true);
         try {
@@ -192,10 +165,6 @@ class Page extends BasePage<Props, State> {
         });
     }
 
-    /**
-     * Renders the component.
-     * @returns The rendered component.
-     */
     public render(): React.ReactNode {
         return (
             <Navigation
@@ -293,18 +262,12 @@ class Page extends BasePage<Props, State> {
     }
 }
 
-/** 
- * Window onload event to render the Page component.
- */
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />)
 };
 
-/** 
- * Window onpageshow event to reload the page if it was restored from the back-forward cache.
- */
 window.onpageshow = (event) => {
     if (event.persisted) {
         window.location.reload();

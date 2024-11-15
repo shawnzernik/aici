@@ -3,38 +3,27 @@ import { TextAreaTheme } from "./TextAreaTheme";
 import { CSSProperties } from "react";
 
 interface Props {
-    id?: string;                       // Optional id for the textarea element
-    password?: boolean;               // Optional flag to indicate if the textarea should be treated as a password field
-    readonly?: boolean;               // Optional flag to make the textarea read-only
-    value?: string;                   // Optional value for the textarea
-    monospace?: boolean;              // Optional flag to apply monospace font
-    rows?: number;                    // Optional number of rows for the textarea
-    onChange?: (value: string) => void; // Optional callback function fired on value change
-    style?: CSSProperties;            // Optional additional style for the textarea
-    showAll?: boolean;                // Optional flag to show all content
+    id?: string;                       
+    password?: boolean;               
+    readonly?: boolean;               
+    value?: string;                   
+    monospace?: boolean;              
+    rows?: number;                    
+    onChange?: (value: string) => void; 
+    style?: CSSProperties;            
+    showAll?: boolean;                
 }
 
 interface State { }
 
-/**
- * TextArea component is a customizable textarea element
- */
 export class TextArea extends React.Component<Props, State> {
-    private textAreaRef: React.RefObject<HTMLTextAreaElement>; // Reference to the textarea element
+    private textAreaRef: React.RefObject<HTMLTextAreaElement>; 
 
-    /**
-     * Constructor to initialize the TextArea component
-     * @param props - Component props
-     */
     public constructor(props: Props) {
         super(props);
         this.textAreaRef = React.createRef();
     }
 
-    /**
-     * Render method to display the textarea
-     * @returns React.ReactNode
-     */
     public render(): React.ReactNode {
         let style: CSSProperties = {
             ...TextAreaTheme,
@@ -48,7 +37,6 @@ export class TextArea extends React.Component<Props, State> {
             };
         }
 
-        // If rows are defined and showAll is not enabled, set height based on rows
         if (this.props.rows && !this.props.showAll) {
             style = {
                 ...style,

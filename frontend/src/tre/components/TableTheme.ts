@@ -9,23 +9,23 @@ export class TableTheme {
      * CSS styles for the table. 
      */
     static table: CSSProperties = {
-        // border: "1pt solid " + Theme.mediumNeutral
+        border: "1pt solid " + Theme.mediumNeutral
     };
 
     /** 
      * CSS styles for the table head cells. 
      */
     static tableHeadTd: CSSProperties = {
-        // border: "1pt solid " + Theme.mediumNeutral,
-        // background: Theme.mediumNeutral,
-        // color: Theme.darkText
+        border: "1pt solid " + Theme.mediumNeutral,
+        background: Theme.mediumNeutral,
+        color: Theme.darkText
     };
 
     /** 
      * CSS styles for the table row cells. 
      */
     static tableRowTd: CSSProperties = {
-        // border: "1pt solid " + Theme.mediumNeutral
+        border: "1pt solid " + Theme.mediumNeutral
     };
 
     /** 

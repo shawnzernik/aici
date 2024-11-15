@@ -1,14 +1,8 @@
 import { CSSProperties } from "react";
 import { Theme } from "./Theme";
 
-/**
- * Class representing a theme for form fields.
- */
 export class FieldTheme {
 
-    /** 
-     * Static property representing the styles for the field component. 
-     */
     public static field: CSSProperties = {
         width: "100%",
         display: "flex",
@@ -20,9 +14,6 @@ export class FieldTheme {
         paddingBottom: "0.5em"
     };
 
-    /** 
-     * Static property representing the styles for the field label component. 
-     */
     public static fieldLabel: CSSProperties = {
         paddingTop: "0.5em",
         paddingBottom: "0.5em",

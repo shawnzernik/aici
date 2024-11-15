@@ -49,6 +49,7 @@ describe("PasswordService", () => {
 
         token = obj["data"] as string;
     }, Config.jestTimeoutSeconds * 1000);
+
     afterAll(async () => {
         try { await new PasswordRepository(eds).delete({ guid: entityGuid }); }
         catch (err) { /* eat error */ }
@@ -89,6 +90,7 @@ describe("PasswordService", () => {
         let reloaded = await new PasswordRepository(eds).findOneByOrFail({ guid: entityGuid });
         expect(entity).toEqual(reloaded);
     }, Config.jestTimeoutSeconds * 1000);
+
     test("POST /api/v0/password overwrite should return 200", async () => {
         if (!token)
             throw new Error("No token - did beforeAll() fail?");
@@ -149,6 +151,7 @@ describe("PasswordService", () => {
         expect(data[0].salt).toBeTruthy();
         expect(data[0].iterations).toBeTruthy();
     }, Config.jestTimeoutSeconds * 1000);
+
     test("GET /api/v0/password/:guid should return password and 200", async () => {
         if (!token)
             throw new Error("No token - did beforeAll() fail?");
@@ -173,6 +176,7 @@ describe("PasswordService", () => {
 
         expect(data.guid).toEqual(entityGuid);
     }, Config.jestTimeoutSeconds * 1000);
+
     test("DELETE /api/v0/password/:guid should delete password and return 200", async () => {
         if (!token)
             throw new Error("No token - did beforeAll() fail?");

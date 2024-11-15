@@ -1,11 +1,4 @@
-/**
- * A class that provides a method for generating UUIDs version 4.
- */
 export class UUIDv4 {
-    /**
-     * Generates a random UUID version 4.
-     * @returns A string representing a randomly generated UUID.
-     */
     public static generate(): string {
         const randomBytes = new Uint8Array(16);
         crypto.getRandomValues(randomBytes);
