@@ -15,31 +15,17 @@ import { Select } from "../../tre/components/Select";
 import { Checkbox } from "../../tre/components/Checkbox";
 import { AuthService } from "../../tre/services/AuthService";
 
-/**
- * Props for the Page component.
- */
 interface Props { }
 
-/**
- * State interface for the Page component, extending base page state.
- */
 interface State extends BasePageState {
-    similarTo: string;         // The text to search for similar items.
-    collection: string;       // The type of content to search (e.g., name, content).
-    limit: string;            // The maximum number of results to return.
-    results: any;             // The search results returned from the AiciService.
-    showContent: boolean;     // Flag to determine whether to show content in results.
+    similarTo: string;         
+    collection: string;       
+    limit: string;            
+    results: any;             
+    showContent: boolean;     
 }
 
-/**
- * Page component that allows users to perform search queries.
- * Inherits base functionalities from BasePage.
- */
 class Page extends BasePage<Props, State> {
-    /**
-     * Creates an instance of the Page component.
-     * @param props - The props for the component.
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -53,10 +39,6 @@ class Page extends BasePage<Props, State> {
         };
     }
 
-    /**
-     * Handler for when the search button is clicked.
-     * It fetches the search results from the AiciService using the current state values.
-     */
     private async searchClicked() {
         try {
             await this.events.setLoading(true);
@@ -77,10 +59,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Renders the component's UI.
-     * @returns The rendered JSX of the component.
-     */
     public render(): React.ReactNode {
         let md = "";
         if (this.state.results) {
@@ -156,14 +134,12 @@ class Page extends BasePage<Props, State> {
     }
 }
 
-// Initializes the root of the React application.
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />);
 };
 
-// Reloads the page when navigating back to a previously cached page.
 window.onpageshow = (event) => {
     if (event.persisted) {
         window.location.reload();

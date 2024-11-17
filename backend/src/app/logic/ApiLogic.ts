@@ -8,17 +8,8 @@ import { EmbeddingRequestDto } from "../models/EmbeddingRequestDto";
 import { Logger } from "../../tre/Logger";
 import { SettingRepository } from "../../tre/data/SettingRepository";
 
-/**
- * ApiLogic class handles the business logic for the AI communication interface.
- */
 export class ApiLogic {
 
-    /**
-     * Triggers a fine-tuning job with the specified parameters.
-     * @param ds The data source to access repositories.
-     * @param requestDto The request data transfer object containing fine-tuning parameters.
-     * @returns The ID of the initiated fine-tuning job.
-     */
     public static async finetune(ds: EntitiesDataSource, requestDto: FinetuneDto): Promise<string> {
         const modelSetting = await new SettingRepository(ds).findByKey("Aici:Finetune:Model");
         const urlSetting = await new SettingRepository(ds).findByKey("Aici:URL");
@@ -51,14 +42,8 @@ export class ApiLogic {
         return data.id;
     }
 
-    /**
-     * Uploads a dataset to the API for fine-tuning.
-     * @param ds The data source to access repositories.
-     * @param dataset The dataset in string format to be uploaded.
-     * @returns The ID of the uploaded dataset.
-     */
     public static async finetuneUpload(ds: EntitiesDataSource, dataset: string): Promise<string> {
-        const boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW';
+        const boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
         const body = `--${boundary}\r\n` +
             `Content-Disposition: form-data; name="purpose"\r\n` +
             `\r\n` +
@@ -91,12 +76,6 @@ export class ApiLogic {
         return data.id;
     }
 
-    /**
-     * Sends a chat message to the AI and receives a response.
-     * @param ds The data source to access repositories.
-     * @param body An array of messages constituting the chat history.
-     * @returns The response object containing AI's reply and other data.
-     */
     public static async chat(ds: EntitiesDataSource, body: Message[]): Promise<Response> {
         const modelSetting = await new SettingRepository(ds).findByKey("Aici:Model");
         const urlSetting = await new SettingRepository(ds).findByKey("Aici:URL");
@@ -125,16 +104,6 @@ export class ApiLogic {
         return aiResponse as Response;
     }
 
-    /**
-     * Retrieves an explanation for the provided file contents from the AI.
-     * @param current The current index for logging purposes.
-     * @param max The maximum index for logging purposes.
-     * @param logger The logger instance for logging messages.
-     * @param ds The data source to access repositories.
-     * @param fileName The name of the file being explained.
-     * @param fileContents The contents of the file being explained.
-     * @returns An array of messages constituting the chat history, including the AI's explanation.
-     */
     public static async getExplanation(current: number, max: number, logger: Logger, ds: EntitiesDataSource, fileName: string, fileContents: string): Promise<Message[]> {
         let userMarkdown = "Explain the file '%FILE%':\n\n```\n%CONTENT%\n```";
         userMarkdown = userMarkdown.replace("%FILE%", fileName);
@@ -160,12 +129,6 @@ export class ApiLogic {
         return messages;
     }
 
-    /**
-     * Retrieves embeddings for the provided content.
-     * @param ds The data source to access repositories.
-     * @param content The content for which to retrieve embeddings.
-     * @returns The list of embeddings retrieved.
-     */
     public static async getEmbedding(ds: EntitiesDataSource, content: string): Promise<EmbeddingListDto> {
         const response: EmbeddingListDto = await ApiLogic.embedding(ds, {
             model: Config.embeddingModel,
@@ -174,12 +137,6 @@ export class ApiLogic {
         return response;
     }
 
-    /**
-     * Private method that interfaces with the API to retrieve embeddings.
-     * @param ds The data source to access repositories.
-     * @param request The request object containing parameters for the embedding retrieval.
-     * @returns The list of embeddings retrieved.
-     */
     private static async embedding(ds: EntitiesDataSource, request: EmbeddingRequestDto): Promise<EmbeddingListDto> {
         const urlSetting = await new SettingRepository(ds).findByKey("Aici:URL");
         const apiKeySetting = await new SettingRepository(ds).findByKey("Aici:API Key");

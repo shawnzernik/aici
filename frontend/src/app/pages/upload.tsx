@@ -13,25 +13,15 @@ import { AuthService } from "../../tre/services/AuthService";
 
 interface Props { }
 
-/**
- * Upload page state interface
- */
 interface State extends BasePageState {
-    file: File | null;        // Selected file for upload
-    corelation: string | null; // Corelation ID after successful upload
-    logs: string | null;      // Logs for display
+    file: File | null;        
+    corelation: string | null; 
+    logs: string | null;      
 }
 
-/**
- * Upload Page Class
- */
 class Page extends BasePage<Props, State> {
-    private interval: NodeJS.Timeout | null; // Interval for uploading logs
+    private interval: NodeJS.Timeout | null; 
 
-    /**
-     * Constructor for Page
-     * @param props Component props
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -43,9 +33,6 @@ class Page extends BasePage<Props, State> {
         };
     }
 
-    /**
-     * Periodically uploads logs to the server
-     */
     private async uploadLogInterval() {
         const token = await AuthService.getToken();
         const logs = await AiciService.uploadLogs(token, this.state.corelation!);
@@ -66,9 +53,6 @@ class Page extends BasePage<Props, State> {
         await this.events.setLoading(false);
     }
 
-    /**
-     * Handles upload button click
-     */
     private async uploadClicked() {
         try {
             await this.events.setLoading(true);
@@ -87,10 +71,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Renders the component
-     * @returns JSX to render
-     */
     public render(): React.ReactNode {
         return (
             <Navigation
@@ -127,19 +107,12 @@ class Page extends BasePage<Props, State> {
     }
 }
 
-/**
- * Window onload event to start the application
- */
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />)
 };
 
-/**
- * Window onpageshow event to reload if persisted
- * @param event 
- */
 window.onpageshow = (event) => {
     if (event.persisted) {
         window.location.reload();

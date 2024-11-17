@@ -22,14 +22,7 @@ interface State extends BasePageState {
     messages: AiciMessage[];
 }
 
-/**
- * Page component for managing datasets and their messages.
- */
 class Page extends BasePage<Props, State> {
-    /**
-     * Constructs the Page component.
-     * @param props - Component props.
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -46,10 +39,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Lifecycle method called after the component is mounted.
-     * Fetches dataset data if a GUID is provided in the query string.
-     */
     public async componentDidMount(): Promise<void> {
         try {
             await this.events.setLoading(true);
@@ -74,10 +63,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Resends a message up to the specified index.
-     * @param index - The index of the message to resend.
-     */
     private async resendClicked(index: number) {
         await this.events.setLoading(true);
 
@@ -91,10 +76,6 @@ class Page extends BasePage<Props, State> {
         window.location.assign("chat.html");
     }
 
-    /**
-     * Removes a message at the specified index.
-     * @param target - The index of the message to remove.
-     */
     private async removeClicked(target: number) {
         await this.events.setLoading(true);
 
@@ -116,9 +97,6 @@ class Page extends BasePage<Props, State> {
         await this.events.setLoading(false);
     }
 
-    /**
-     * Saves the current dataset state.
-     */
     private async saveClicked() {
         try {
             await this.events.setLoading(true);
@@ -136,9 +114,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Deletes the current dataset.
-     */
     private async deleteClicked() {
         try {
             await this.events.setLoading(true);
@@ -155,9 +130,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Suggests a title for the dataset using AI based on the message history.
-     */
     private async suggestClicked() {
         try {
             await this.events.setLoading(true);
@@ -180,10 +152,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Appends a new message to the conversation history with the specified role.
-     * @param role - The role of the new message ("user" or "assistant").
-     */
     async appendClicked(role: string) {
         try {
             await this.events.setLoading(true);
@@ -210,19 +178,10 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Counts the number of lines in a text string.
-     * @param text - The text to count lines in.
-     * @returns The number of lines in the text.
-     */
     private countLines(text: string) {
         return text.split("\n").length;
     }
 
-    /**
-     * Renders the component.
-     * @returns The rendered component.
-     */
     public render(): React.ReactNode {
         const messages: React.ReactElement[] = [];
 
@@ -337,7 +296,7 @@ class Page extends BasePage<Props, State> {
 }
 
 window.onload = () => {
-    const element = document.getElementById('root');
+    const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />)
 };

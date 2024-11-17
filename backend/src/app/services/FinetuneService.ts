@@ -8,19 +8,11 @@ import { ApiLogic } from "../logic/ApiLogic";
 import { DatasetLogic } from "../logic/DatasetLogic";
 import { FinetuneRepository } from "../data/FinetuneRepository";
 
-/**
- * Service class for handling fine-tune related operations.
- */
 export class FinetuneService extends BaseService {
     protected constructDataSource(): EntitiesDataSource {
         return new EntitiesDataSource();
     }
 
-    /**
-     * Constructor for the FinetuneService class.
-     * @param logger - The logger instance for logging.
-     * @param app - The express application instance.
-     */
     public constructor(logger: Logger, app: express.Express) {
         super();
 
@@ -32,13 +24,6 @@ export class FinetuneService extends BaseService {
         app.delete("/api/v0/finetune/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
     }
 
-    /**
-     * Retrieves a specific fine-tune entity by its GUID.
-     * @param logger - The logger instance for logging.
-     * @param req - The express request object.
-     * @param ds - The data source instance.
-     * @returns The FinetuneDto object or null if not found.
-     */
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<FinetuneDto | null> {
         await logger.trace();
         await BaseService.checkSecurityName(logger, "Finetune:Read", req, ds);
@@ -48,13 +33,6 @@ export class FinetuneService extends BaseService {
         return ret;
     }
 
-    /**
-     * Retrieves a list of all fine-tune entities.
-     * @param logger - The logger instance for logging.
-     * @param req - The express request object.
-     * @param ds - The data source instance.
-     * @returns An array of FinetuneDto objects.
-     */
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<FinetuneDto[]> {
         await logger.trace();
         await BaseService.checkSecurityName(logger, "Finetune:List", req, ds);
@@ -63,12 +41,6 @@ export class FinetuneService extends BaseService {
         return ret;
     }
 
-    /**
-     * Saves a new fine-tune entity.
-     * @param logger - The logger instance for logging.
-     * @param req - The express request object.
-     * @param ds - The data source instance.
-     */
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurityName(logger, "Finetune:Save", req, ds);
@@ -86,12 +58,6 @@ export class FinetuneService extends BaseService {
         await new FinetuneRepository(ds).save([entity]);
     }
 
-    /**
-     * Deletes a specific fine-tune entity by its GUID.
-     * @param logger - The logger instance for logging.
-     * @param req - The express request object.
-     * @param ds - The data source instance.
-     */
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurityName(logger, "Finetune:Delete", req, ds);

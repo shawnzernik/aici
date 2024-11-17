@@ -18,14 +18,7 @@ interface State extends BasePageState {
     model: FinetuneDto;
 }
 
-/**
- * Page component for editing a finetune model.
- */
 class Page extends BasePage<Props, State> {
-    /**
-     * Constructs the Page component.
-     * @param props - Props for the component.
-     */
     public constructor(props: Props) {
         super(props);
 
@@ -49,9 +42,6 @@ class Page extends BasePage<Props, State> {
         };
     }
 
-    /**
-     * Lifecycle method that is called after the component is mounted.
-     */
     public async componentDidMount(): Promise<void> {
         this.events.setLoading(true);
 
@@ -67,9 +57,6 @@ class Page extends BasePage<Props, State> {
         this.events.setLoading(false);
     }
 
-    /**
-     * Handler for the save button click event.
-     */
     public async saveClicked() {
         this.events.setLoading(true);
         try {
@@ -84,9 +71,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Handler for the delete button click event.
-     */
     public async deleteClicked() {
         this.events.setLoading(true);
         try {
@@ -101,10 +85,6 @@ class Page extends BasePage<Props, State> {
         }
     }
 
-    /**
-     * Renders the component.
-     * @returns The rendered component.
-     */
     public render(): React.ReactNode {
         return (
             <Navigation
@@ -186,19 +166,12 @@ class Page extends BasePage<Props, State> {
     }
 }
 
-/**
- * Window load event handler that renders the Page component.
- */
 window.onload = () => {
     const element = document.getElementById("root");
     const root = createRoot(element);
     root.render(<Page />);
 };
 
-/**
- * Window page show event handler that reloads the page if it was restored from cache.
- * @param event - The event object.
- */
 window.onpageshow = (event) => {
     if (event.persisted) {
         window.location.reload();

@@ -6,19 +6,11 @@ import { EntitiesDataSource } from "../../app/data/EntitiesDataSource";
 import { BaseService } from "../../tre/services/BaseService";
 import { DatasetRepository } from "../data/DatasetRepository";
 
-/**
- * Service for handling dataset-related operations.
- */
 export class DatasetService extends BaseService {
     protected constructDataSource(): EntitiesDataSource {
         return new EntitiesDataSource();
     }
 
-    /** 
-     * Creates an instance of DatasetService. 
-     * @param logger - Logger instance for logging purposes.
-     * @param app - Express application instance.
-     */
     public constructor(logger: Logger, app: express.Express) {
         super();
 
@@ -30,13 +22,6 @@ export class DatasetService extends BaseService {
         app.delete("/api/v0/dataset/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
     }
 
-    /** 
-     * Retrieves a dataset by its GUID. 
-     * @param logger - Logger instance for logging purposes.
-     * @param req - Express request object containing the dataset GUID in the parameters.
-     * @param ds - Data source for accessing entities.
-     * @returns Promise resolving to a DatasetDto object or null if not found.
-     */
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<DatasetDto | null> {
         await logger.trace();
         await BaseService.checkSecurityName(logger, "Dataset:Read", req, ds);
@@ -46,13 +31,6 @@ export class DatasetService extends BaseService {
         return ret;
     }
 
-    /** 
-     * Retrieves the list of all datasets. 
-     * @param logger - Logger instance for logging purposes.
-     * @param req - Express request object.
-     * @param ds - Data source for accessing entities.
-     * @returns Promise resolving to an array of DatasetDto objects.
-     */
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<DatasetDto[]> {
         await logger.trace();
         await BaseService.checkSecurityName(logger, "Dataset:List", req, ds);
@@ -61,13 +39,6 @@ export class DatasetService extends BaseService {
         return ret;
     }
 
-    /** 
-     * Saves a new dataset entity. 
-     * @param logger - Logger instance for logging purposes.
-     * @param req - Express request object containing the dataset data in the body.
-     * @param ds - Data source for accessing entities.
-     * @returns Promise resolving to void.
-     */
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurityName(logger, "Dataset:Save", req, ds);
@@ -77,13 +48,6 @@ export class DatasetService extends BaseService {
         await new DatasetRepository(ds).save([entity]);
     }
 
-    /** 
-     * Deletes a dataset by its GUID. 
-     * @param logger - Logger instance for logging purposes.
-     * @param req - Express request object containing the dataset GUID in the parameters.
-     * @param ds - Data source for accessing entities.
-     * @returns Promise resolving to void.
-     */
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
         await BaseService.checkSecurityName(logger, "Dataset:Delete", req, ds);
