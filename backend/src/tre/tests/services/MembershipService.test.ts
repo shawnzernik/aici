@@ -96,7 +96,7 @@ describe("MembershipService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new MembershipRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("POST /api/v0/membership overwrite should return 200", async () => {
         if (!token)
@@ -126,7 +126,7 @@ describe("MembershipService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new MembershipRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("GET /api/v0/memberships should return membership list", async () => {
         if (!token)

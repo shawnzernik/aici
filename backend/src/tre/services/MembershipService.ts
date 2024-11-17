@@ -17,18 +17,18 @@ export class MembershipService extends BaseService {
 
         logger.trace();
 
-        app.get("/api/v0/membership/:guid", (req, resp) => { this.methodWrapper(req, resp, this.getGuid) });
-        app.get("/api/v0/memberships", (req, resp) => { this.methodWrapper(req, resp, this.getList) });
-        app.post("/api/v0/membership", (req, resp) => { this.methodWrapper(req, resp, this.postSave) });
-        app.delete("/api/v0/membership/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
+        app.get("/api/v0/membership/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGuid) });
+        app.get("/api/v0/memberships", (req, resp) => { this.responseDtoWrapper(req, resp, this.getList) });
+        app.post("/api/v0/membership", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSave) });
+        app.delete("/api/v0/membership/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
 
-        app.get("/api/v0/group/:guid/memberships", (req, resp) => { this.methodWrapper(req, resp, this.getGroupMemberships) });
-        app.get("/api/v0/user/:guid/memberships", (req, resp) => { this.methodWrapper(req, resp, this.getUserMemberships) });
+        app.get("/api/v0/group/:guid/memberships", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGroupMemberships) });
+        app.get("/api/v0/user/:guid/memberships", (req, resp) => { this.responseDtoWrapper(req, resp, this.getUserMemberships) });
     }
 
     public async getGroupMemberships(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<MembershipDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Membership:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Membership:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await MembershipLogic.getGroupMemberships(ds, guid);
@@ -37,7 +37,7 @@ export class MembershipService extends BaseService {
 
     public async getUserMemberships(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<MembershipDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Membership:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Membership:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await MembershipLogic.getUserMemberships(ds, guid);
@@ -46,7 +46,7 @@ export class MembershipService extends BaseService {
 
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<MembershipDto | null> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Membership:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Membership:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await new MembershipRepository(ds).findOneBy({ guid: guid });
@@ -55,7 +55,7 @@ export class MembershipService extends BaseService {
 
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<MembershipDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Membership:List", req, ds);
+        await BaseService.checkSecurityName(logger, "Membership:List", req, ds);
 
         const ret = await new MembershipRepository(ds).find();
         return ret;
@@ -63,7 +63,7 @@ export class MembershipService extends BaseService {
 
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Membership:Save", req, ds);
+        await BaseService.checkSecurityName(logger, "Membership:Save", req, ds);
 
         const entity = new MembershipEntity();
         entity.copyFrom(req.body as MembershipEntity);
@@ -72,7 +72,7 @@ export class MembershipService extends BaseService {
 
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Membership:Delete", req, ds);
+        await BaseService.checkSecurityName(logger, "Membership:Delete", req, ds);
 
         const guid = req.params["guid"];
         await new MembershipRepository(ds).delete({ guid: guid });

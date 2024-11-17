@@ -16,15 +16,15 @@ export class GroupService extends BaseService {
 
         logger.trace();
 
-        app.get("/api/v0/group/:guid", (req, resp) => { this.methodWrapper(req, resp, this.getGuid) });
-        app.get("/api/v0/groups", (req, resp) => { this.methodWrapper(req, resp, this.getList) });
-        app.post("/api/v0/group", (req, resp) => { this.methodWrapper(req, resp, this.postSave) });
-        app.delete("/api/v0/group/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
+        app.get("/api/v0/group/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGuid) });
+        app.get("/api/v0/groups", (req, resp) => { this.responseDtoWrapper(req, resp, this.getList) });
+        app.post("/api/v0/group", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSave) });
+        app.delete("/api/v0/group/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
     }
 
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<GroupDto | null> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Group:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Group:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await new GroupRepository(ds).findOneBy({ guid: guid });
@@ -33,7 +33,7 @@ export class GroupService extends BaseService {
 
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<GroupDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Group:List", req, ds);
+        await BaseService.checkSecurityName(logger, "Group:List", req, ds);
 
         const ret = await new GroupRepository(ds).find();
         return ret;
@@ -41,7 +41,7 @@ export class GroupService extends BaseService {
 
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Group:Save", req, ds);
+        await BaseService.checkSecurityName(logger, "Group:Save", req, ds);
 
         const entity = new GroupEntity();
         entity.copyFrom(req.body as GroupDto);
@@ -50,7 +50,7 @@ export class GroupService extends BaseService {
 
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Group:Delete", req, ds);
+        await BaseService.checkSecurityName(logger, "Group:Delete", req, ds);
 
         const guid = req.params["guid"];
         await new GroupRepository(ds).delete({ guid: guid });

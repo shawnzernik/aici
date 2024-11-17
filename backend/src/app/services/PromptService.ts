@@ -14,15 +14,15 @@ export class PromptService extends BaseService {
     public constructor(logger: Logger, app: express.Express) {
         super();
         logger.trace();
-        app.get("/api/v0/prompt/:guid", (req, resp) => { this.methodWrapper(req, resp, this.getGuid) });
-        app.get("/api/v0/prompts", (req, resp) => { this.methodWrapper(req, resp, this.getList) });
-        app.post("/api/v0/prompt", (req, resp) => { this.methodWrapper(req, resp, this.postSave) });
-        app.delete("/api/v0/prompt/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
+        app.get("/api/v0/prompt/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGuid) });
+        app.get("/api/v0/prompts", (req, resp) => { this.responseDtoWrapper(req, resp, this.getList) });
+        app.post("/api/v0/prompt", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSave) });
+        app.delete("/api/v0/prompt/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
     }
 
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<PromptDto | null> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Prompt:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Prompt:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await new PromptRepository(ds).findOneBy({ guid: guid });
@@ -31,7 +31,7 @@ export class PromptService extends BaseService {
 
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<PromptDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Prompt:List", req, ds);
+        await BaseService.checkSecurityName(logger, "Prompt:List", req, ds);
 
         const ret = await new PromptRepository(ds).find();
         return ret;
@@ -39,7 +39,7 @@ export class PromptService extends BaseService {
 
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Prompt:Save", req, ds);
+        await BaseService.checkSecurityName(logger, "Prompt:Save", req, ds);
 
         const entity = new PromptEntity();
         entity.copyFrom(req.body as PromptDto);
@@ -48,7 +48,7 @@ export class PromptService extends BaseService {
 
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Prompt:Delete", req, ds);
+        await BaseService.checkSecurityName(logger, "Prompt:Delete", req, ds);
 
         const guid = req.params["guid"];
         await new PromptRepository(ds).delete({ guid: guid });

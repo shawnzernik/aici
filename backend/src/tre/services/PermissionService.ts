@@ -17,18 +17,18 @@ export class PermissionService extends BaseService {
 
         logger.trace();
 
-        app.get("/api/v0/permission/:guid", (req, resp) => { this.methodWrapper(req, resp, this.getGuid) });
-        app.get("/api/v0/permissions", (req, resp) => { this.methodWrapper(req, resp, this.getList) });
-        app.post("/api/v0/permission", (req, resp) => { this.methodWrapper(req, resp, this.postSave) });
-        app.delete("/api/v0/permission/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
+        app.get("/api/v0/permission/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGuid) });
+        app.get("/api/v0/permissions", (req, resp) => { this.responseDtoWrapper(req, resp, this.getList) });
+        app.post("/api/v0/permission", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSave) });
+        app.delete("/api/v0/permission/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
 
-        app.get("/api/v0/group/:guid/permissions", (req, resp) => { this.methodWrapper(req, resp, this.getGroupPermissions) });
-        app.get("/api/v0/securable/:guid/permissions", (req, resp) => { this.methodWrapper(req, resp, this.getSecurablePermissions) });
+        app.get("/api/v0/group/:guid/permissions", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGroupPermissions) });
+        app.get("/api/v0/securable/:guid/permissions", (req, resp) => { this.responseDtoWrapper(req, resp, this.getSecurablePermissions) });
     }
 
     public async getGroupPermissions(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<PermissionDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Permission:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Permission:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await PermissionLogic.getGroupPermissions(ds, guid);
@@ -37,7 +37,7 @@ export class PermissionService extends BaseService {
 
     public async getSecurablePermissions(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<PermissionDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Permission:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Permission:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await PermissionLogic.getSecurablePermissions(ds, guid);
@@ -46,7 +46,7 @@ export class PermissionService extends BaseService {
 
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<PermissionDto | null> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Permission:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Permission:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await new PermissionRepository(ds).findOneBy({ guid: guid });
@@ -55,7 +55,7 @@ export class PermissionService extends BaseService {
 
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<PermissionDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Permission:List", req, ds);
+        await BaseService.checkSecurityName(logger, "Permission:List", req, ds);
 
         const ret = await new PermissionRepository(ds).find();
         return ret;
@@ -63,7 +63,7 @@ export class PermissionService extends BaseService {
 
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Permission:Save", req, ds);
+        await BaseService.checkSecurityName(logger, "Permission:Save", req, ds);
 
         const entity = new PermissionEntity();
         entity.copyFrom(req.body as PermissionDto);
@@ -72,7 +72,7 @@ export class PermissionService extends BaseService {
 
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Permission:Delete", req, ds);
+        await BaseService.checkSecurityName(logger, "Permission:Delete", req, ds);
 
         const guid = req.params["guid"];
         await new PermissionRepository(ds).delete({ guid: guid });

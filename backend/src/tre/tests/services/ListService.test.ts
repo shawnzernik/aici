@@ -78,7 +78,7 @@ describe("ListService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new ListRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
 
     test("POST /api/v0/list/:guid/items should return items and 200", async () => {

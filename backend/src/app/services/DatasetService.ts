@@ -24,10 +24,10 @@ export class DatasetService extends BaseService {
 
         logger.trace();
 
-        app.get("/api/v0/dataset/:guid", (req, resp) => { this.methodWrapper(req, resp, this.getGuid) });
-        app.get("/api/v0/datasets", (req, resp) => { this.methodWrapper(req, resp, this.getList) });
-        app.post("/api/v0/dataset", (req, resp) => { this.methodWrapper(req, resp, this.postSave) });
-        app.delete("/api/v0/dataset/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
+        app.get("/api/v0/dataset/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGuid) });
+        app.get("/api/v0/datasets", (req, resp) => { this.responseDtoWrapper(req, resp, this.getList) });
+        app.post("/api/v0/dataset", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSave) });
+        app.delete("/api/v0/dataset/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
     }
 
     /** 
@@ -39,7 +39,7 @@ export class DatasetService extends BaseService {
      */
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<DatasetDto | null> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Dataset:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Dataset:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await new DatasetRepository(ds).findOneBy({ guid: guid });
@@ -55,7 +55,7 @@ export class DatasetService extends BaseService {
      */
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<DatasetDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Dataset:List", req, ds);
+        await BaseService.checkSecurityName(logger, "Dataset:List", req, ds);
 
         const ret = await new DatasetRepository(ds).find();
         return ret;
@@ -70,7 +70,7 @@ export class DatasetService extends BaseService {
      */
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Dataset:Save", req, ds);
+        await BaseService.checkSecurityName(logger, "Dataset:Save", req, ds);
 
         const entity = new DatasetEntity();
         entity.copyFrom(req.body as DatasetDto);
@@ -86,7 +86,7 @@ export class DatasetService extends BaseService {
      */
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Dataset:Delete", req, ds);
+        await BaseService.checkSecurityName(logger, "Dataset:Delete", req, ds);
 
         const guid = req.params["guid"];
         await new DatasetRepository(ds).delete({ guid: guid });

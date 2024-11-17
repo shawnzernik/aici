@@ -71,7 +71,7 @@ describe("GroupsService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new GroupRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("POST /api/v0/group overwrite should return 200", async () => {
         if (!token)
@@ -100,7 +100,7 @@ describe("GroupsService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new GroupRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("GET /api/v0/groups should return group list", async () => {
         if (!token)

@@ -111,13 +111,23 @@ export class AuthService {
 
         const now = Date.now();
         const expiresMinutesLeft = (jwt.expires - now) / 1000 / 60;
-        if (expiresMinutesLeft > 2)
-            return token;
         if (expiresMinutesLeft < 0)
             throw new Error("Token has expired! Please log in again.");
+        if (expiresMinutesLeft > 2) {
+            let cookie = `authorization=Bearer ${token}; path="/"; max-age=3600; SameSite=Strict`;
+            console.log("Cookie Length: " + cookie.length);
+            console.log("Cookie: " + cookie);
+            document.cookie = cookie;
+            return token;
+        }
 
         const newToken = await AuthService.renew(token);
         AuthService.setToken(newToken);
+
+        let cookie = `authorization=Bearer ${newToken}; path="/"; max-age=3600; SameSite=Strict`;
+        console.log("Cookie Length: " + cookie.length);
+        console.log("Cookie: " + cookie);
+        document.cookie = cookie;
         return newToken;
     }
 }

@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "es2016",
         "module": "commonjs",
         "rootDir": "./src",
         "outDir": "./dist",
@@ -8,7 +8,10 @@
         "skipLibCheck": true,
         "strict": true,
         "moduleResolution": "node",
-        "lib": ["es6", "dom"],
+        "lib": [
+            "es6",
+            "dom"
+        ],
         "forceConsistentCasingInFileNames": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true

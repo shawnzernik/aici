@@ -16,16 +16,16 @@ export class ListFilterService extends BaseService {
 
         logger.trace();
 
-        app.get("/api/v0/list_filter/:guid", (req, resp) => { this.methodWrapper(req, resp, this.getGuid) });
-        app.get("/api/v0/list_filters", (req, resp) => { this.methodWrapper(req, resp, this.getList) });
-        app.post("/api/v0/list_filter", (req, resp) => { this.methodWrapper(req, resp, this.postSave) });
-        app.delete("/api/v0/list_filter/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
-        app.get("/api/v0/list/:guid/filters", (req, resp) => { this.methodWrapper(req, resp, this.getListByParentList) });
+        app.get("/api/v0/list_filter/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGuid) });
+        app.get("/api/v0/list_filters", (req, resp) => { this.responseDtoWrapper(req, resp, this.getList) });
+        app.post("/api/v0/list_filter", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSave) });
+        app.delete("/api/v0/list_filter/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
+        app.get("/api/v0/list/:guid/filters", (req, resp) => { this.responseDtoWrapper(req, resp, this.getListByParentList) });
     }
 
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<ListFilterDto | null> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "ListFilter:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "ListFilter:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await new ListFilterRepository(ds).findOneBy({ guid: guid });
@@ -34,7 +34,7 @@ export class ListFilterService extends BaseService {
 
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<ListFilterDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "ListFilter:List", req, ds);
+        await BaseService.checkSecurityName(logger, "ListFilter:List", req, ds);
 
         const ret = await new ListFilterRepository(ds).find();
         return ret;
@@ -42,7 +42,7 @@ export class ListFilterService extends BaseService {
 
     public async getListByParentList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<ListFilterDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "ListFilter:List", req, ds);
+        await BaseService.checkSecurityName(logger, "ListFilter:List", req, ds);
 
         const guid = req.params["guid"];
         const ret = await new ListFilterRepository(ds).find({
@@ -54,7 +54,7 @@ export class ListFilterService extends BaseService {
 
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "ListFilter:Save", req, ds);
+        await BaseService.checkSecurityName(logger, "ListFilter:Save", req, ds);
 
         const entity = new ListFilterEntity();
         entity.copyFrom(req.body as ListFilterDto);
@@ -63,7 +63,7 @@ export class ListFilterService extends BaseService {
 
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "ListFilter:Delete", req, ds);
+        await BaseService.checkSecurityName(logger, "ListFilter:Delete", req, ds);
 
         const guid = req.params["guid"];
         await new ListFilterRepository(ds).delete({ guid: guid });

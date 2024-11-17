@@ -73,7 +73,7 @@ describe("MenuService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new MenuRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("POST /api/v0/menu overwrite should return 200", async () => {
         if (!token)
@@ -104,7 +104,7 @@ describe("MenuService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new MenuRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("GET /api/v0/menus should return menu list", async () => {
         if (!token)

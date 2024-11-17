@@ -16,15 +16,15 @@ export class SecurableService extends BaseService {
 
         logger.trace();
 
-        app.get("/api/v0/securable/:guid", (req, resp) => { this.methodWrapper(req, resp, this.getGuid) });
-        app.get("/api/v0/securables", (req, resp) => { this.methodWrapper(req, resp, this.getList) });
-        app.post("/api/v0/securable", (req, resp) => { this.methodWrapper(req, resp, this.postSave) });
-        app.delete("/api/v0/securable/:guid", (req, resp) => { this.methodWrapper(req, resp, this.deleteGuid) });
+        app.get("/api/v0/securable/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.getGuid) });
+        app.get("/api/v0/securables", (req, resp) => { this.responseDtoWrapper(req, resp, this.getList) });
+        app.post("/api/v0/securable", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSave) });
+        app.delete("/api/v0/securable/:guid", (req, resp) => { this.responseDtoWrapper(req, resp, this.deleteGuid) });
     }
 
     public async getGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<SecurableDto | null> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Securable:Read", req, ds);
+        await BaseService.checkSecurityName(logger, "Securable:Read", req, ds);
 
         const guid = req.params["guid"];
         const ret = await new SecurableRepository(ds).findOneBy({ guid: guid });
@@ -33,15 +33,15 @@ export class SecurableService extends BaseService {
 
     public async getList(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<SecurableDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Securable:List", req, ds);
+        await BaseService.checkSecurityName(logger, "Securable:List", req, ds);
 
-        const ret = await new SecurableRepository(ds).find();
+        const ret = await new SecurableRepository(ds).find({ order: { displayName: "ASC" } });
         return ret;
     }
 
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Securable:Save", req, ds);
+        await BaseService.checkSecurityName(logger, "Securable:Save", req, ds);
 
         const entity = new SecurableEntity();
         entity.copyFrom(req.body as SecurableDto);
@@ -50,7 +50,7 @@ export class SecurableService extends BaseService {
 
     public async deleteGuid(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Securable:Delete", req, ds);
+        await BaseService.checkSecurityName(logger, "Securable:Delete", req, ds);
 
         const guid = req.params["guid"];
         await new SecurableRepository(ds).delete({ guid: guid });

@@ -12,6 +12,7 @@ import { AuthService } from "../services/AuthService";
 import { SettingDto } from "common/src/tre/models/SettingDto";
 import { SettingService } from "../services/SettingService";
 import { TextArea } from "../../tre/components/TextArea";
+import { UUIDv4 } from "common/src/tre/logic/UUIDv4";
 
 interface Props { }
 interface State extends BasePageState {
@@ -25,7 +26,7 @@ class Page extends BasePage<Props, State> {
         this.state = {
             ...BasePage.defaultState,
             model: {
-                guid: "",
+                guid: UUIDv4.generate(),
                 key: "",
                 value: ""
             },
@@ -37,6 +38,9 @@ class Page extends BasePage<Props, State> {
 
         const token = await AuthService.getToken();
         const guid = this.queryString("guid");
+
+        if (!guid)
+            return;
 
         try {
             const setting = await SettingService.get(token, guid);
@@ -76,8 +80,12 @@ class Page extends BasePage<Props, State> {
                         value={this.state.model.guid}
                     /></Field>
                     <Field label="Key" size={3}><Input
-                        readonly={true}
                         value={this.state.model.key}
+                        onChange={async (value) => {
+                            const newModel = this.jsonCopy(this.state.model);;
+                            newModel.key = value;
+                            await this.updateState({ model: newModel });
+                        }}
                     /></Field>
                     <Field label="Value"><TextArea
                         showAll={true}

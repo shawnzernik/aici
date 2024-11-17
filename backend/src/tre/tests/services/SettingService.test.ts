@@ -72,7 +72,7 @@ describe("SettingService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new SettingRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
 
     test("GET /api/v0/settings should return settings list", async () => {

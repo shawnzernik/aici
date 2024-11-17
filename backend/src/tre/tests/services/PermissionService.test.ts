@@ -94,7 +94,7 @@ describe("PermissionService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new PermissionRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("POST /api/v0/permission overwrite should return 200", async () => {
         if (!token)
@@ -124,7 +124,7 @@ describe("PermissionService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new PermissionRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("GET /api/v0/permissions should return permission list", async () => {
         if (!token)

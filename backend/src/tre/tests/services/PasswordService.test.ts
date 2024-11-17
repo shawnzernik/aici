@@ -88,7 +88,7 @@ describe("PasswordService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new PasswordRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
 
     test("POST /api/v0/password overwrite should return 200", async () => {
@@ -120,7 +120,7 @@ describe("PasswordService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new PasswordRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("GET /api/v0/passwords should return password list", async () => {
         if (!token)

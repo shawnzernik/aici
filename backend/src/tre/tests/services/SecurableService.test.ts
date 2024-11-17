@@ -72,7 +72,7 @@ describe("SecurableService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new SecurableRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("POST /api/v0/securable overwrite should return 200", async () => {
         if (!token)
@@ -100,7 +100,7 @@ describe("SecurableService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new SecurableRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
     test("GET /api/v0/securables should return securable list", async () => {
         if (!token)

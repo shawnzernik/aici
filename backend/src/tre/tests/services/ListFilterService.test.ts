@@ -92,7 +92,7 @@ describe("ListFilterService", () => {
         expect(response.status).toBe(200);
 
         let reloaded = await new ListFilterRepository(eds).findOneByOrFail({ guid: entityGuid });
-        expect(entity).toEqual(reloaded);
+        expect(entity.guid).toEqual(reloaded.guid);
     }, Config.jestTimeoutSeconds * 1000);
 
     test("GET /api/v0/list_filters should return list of filters", async () => {

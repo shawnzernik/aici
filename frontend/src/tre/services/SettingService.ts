@@ -11,6 +11,15 @@ export class SettingService {
         });
         return ret;
     }
+    public static async getKey(token: string, key: string): Promise<SettingDto> {
+        const ret = await FetchWrapper.post<SettingDto>({
+            url: "/api/v0/setting/key",
+            body: { "key": key },
+            corelation: UUIDv4.generate(),
+            token: token
+        });
+        return ret;
+    }
 
     public static async list(token: string): Promise<SettingDto[]> {
         const ret = await FetchWrapper.get<SettingDto[]>({

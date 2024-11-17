@@ -19,18 +19,18 @@ export class AiciService extends BaseService {
 
         logger.trace();
 
-        app.post("/api/v0/aici/chat", (req, resp) => { this.methodWrapper(req, resp, this.postChat) });
-        app.post("/api/v0/aici/upload", (req, resp) => { this.methodWrapper(req, resp, this.postUpload) });
-        app.post("/api/v0/aici/save", (req, resp) => { this.methodWrapper(req, resp, this.postSave) });
-        app.post("/api/v0/aici/download", (req, resp) => { this.methodWrapper(req, resp, this.postDownload) });
-        app.post("/api/v0/aici/project", (req, resp) => { this.methodWrapper(req, resp, this.postProject) });
-        app.get("/api/v0/aici/upload/:corelation", (req, resp) => { this.methodWrapper(req, resp, this.getUpload) });
-        app.post("/api/v0/aici/search/:collection", (req, resp) => { this.methodWrapper(req, resp, this.postSearch) });
+        app.post("/api/v0/aici/chat", (req, resp) => { this.responseDtoWrapper(req, resp, this.postChat) });
+        app.post("/api/v0/aici/upload", (req, resp) => { this.responseDtoWrapper(req, resp, this.postUpload) });
+        app.post("/api/v0/aici/save", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSave) });
+        app.post("/api/v0/aici/download", (req, resp) => { this.responseDtoWrapper(req, resp, this.postDownload) });
+        app.post("/api/v0/aici/project", (req, resp) => { this.responseDtoWrapper(req, resp, this.postProject) });
+        app.get("/api/v0/aici/upload/:corelation", (req, resp) => { this.responseDtoWrapper(req, resp, this.getUpload) });
+        app.post("/api/v0/aici/search/:collection", (req, resp) => { this.responseDtoWrapper(req, resp, this.postSearch) });
     }
 
     public async postChat(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<AiciResponse> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Aici:Chat", req, ds);
+        await BaseService.checkSecurityName(logger, "Aici:Chat", req, ds);
 
         const aiResponse: AiciResponse = await ApiLogic.chat(ds, req.body);
         return aiResponse;
@@ -38,21 +38,21 @@ export class AiciService extends BaseService {
 
     public async postUpload(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Aici:Upload", req, ds);
+        await BaseService.checkSecurityName(logger, "Aici:Upload", req, ds);
 
         UploadLogic.upload(logger, req.body);
     }
 
     public async postSave(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Aici:Save", req, ds);
+        await BaseService.checkSecurityName(logger, "Aici:Save", req, ds);
 
         UploadLogic.save(logger, req.body);
     }
 
     public async postDownload(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<AiciFile> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Aici:Download", req, ds);
+        await BaseService.checkSecurityName(logger, "Aici:Download", req, ds);
 
         const ret = await UploadLogic.download(ds, req.body);
         return ret;
@@ -60,7 +60,7 @@ export class AiciService extends BaseService {
 
     public async postProject(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<AiciFile> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Aici:Project", req, ds);
+        await BaseService.checkSecurityName(logger, "Aici:Project", req, ds);
 
         const ret = await UploadLogic.project(ds, req.body);
         return ret;
@@ -68,7 +68,7 @@ export class AiciService extends BaseService {
 
     public async postSearch(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<any> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Aici:Embedding", req, ds);
+        await BaseService.checkSecurityName(logger, "Aici:Embedding", req, ds);
 
         const collection = req.params["collection"];
         const obj = req.body;
@@ -83,7 +83,7 @@ export class AiciService extends BaseService {
 
     public async getUpload(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<LogDto[]> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Aici:Upload", req, ds);
+        await BaseService.checkSecurityName(logger, "Aici:Upload", req, ds);
 
         const corelation = req.params["corelation"];
         const ret = await UploadLogic.getUploadLogs(ds, corelation);

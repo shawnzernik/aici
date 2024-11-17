@@ -21,18 +21,18 @@ export class AuthService extends BaseService {
 
         logger.trace();
 
-        app.post("/api/v0/auth/login", (req, resp) => { this.methodWrapper(req, resp, this.postLogin) });
-        app.get("/api/v0/auth/renew", (req, resp) => { this.methodWrapper(req, resp, this.postRenew) });
-        app.get("/api/v0/auth/public_key", (req, resp) => { this.methodWrapper(req, resp, this.getPublicKey) });
-        app.get("/api/v0/auth/anonymous", (req, resp) => { this.methodWrapper(req, resp, this.getAnonymous) });
-        app.get("/api/v0/auth/user", (req, resp) => { this.methodWrapper(req, resp, this.getUser) });
-        app.post("/api/v0/auth/user", (req, resp) => { this.methodWrapper(req, resp, this.postUser) });
-        app.post("/api/v0/auth/password", (req, resp) => { this.methodWrapper(req, resp, this.postPassword) });
+        app.post("/api/v0/auth/login", (req, resp) => { this.responseDtoWrapper(req, resp, this.postLogin) });
+        app.get("/api/v0/auth/renew", (req, resp) => { this.responseDtoWrapper(req, resp, this.postRenew) });
+        app.get("/api/v0/auth/public_key", (req, resp) => { this.responseDtoWrapper(req, resp, this.getPublicKey) });
+        app.get("/api/v0/auth/anonymous", (req, resp) => { this.responseDtoWrapper(req, resp, this.getAnonymous) });
+        app.get("/api/v0/auth/user", (req, resp) => { this.responseDtoWrapper(req, resp, this.getUser) });
+        app.post("/api/v0/auth/user", (req, resp) => { this.responseDtoWrapper(req, resp, this.postUser) });
+        app.post("/api/v0/auth/password", (req, resp) => { this.responseDtoWrapper(req, resp, this.postPassword) });
     }
 
     public async getUser(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<UserDto> {
         await logger.trace();
-        const logic = await BaseService.checkSecurity(logger, "Auth:Get:User", req, ds);
+        const logic = await BaseService.checkSecurityName(logger, "Auth:Get:User", req, ds);
 
         const ret = await new UserRepository(ds).findOneBy({ guid: logic.user!.guid });
         if (!ret)
@@ -43,9 +43,9 @@ export class AuthService extends BaseService {
 
     public async postUser(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Auth:Post:User", req, ds);
+        await BaseService.checkSecurityName(logger, "Auth:Post:User", req, ds);
 
-        const logic = await BaseService.checkSecurity(logger, "Auth:Get:User", req, ds);
+        const logic = await BaseService.checkSecurityName(logger, "Auth:Get:User", req, ds);
 
         const entity = new UserEntity();
         entity.copyFrom(req.body as UserDto);
@@ -58,9 +58,9 @@ export class AuthService extends BaseService {
 
     public async postPassword(logger: Logger, req: express.Request, ds: EntitiesDataSource): Promise<void> {
         await logger.trace();
-        await BaseService.checkSecurity(logger, "Auth:Post:Password", req, ds);
+        await BaseService.checkSecurityName(logger, "Auth:Post:Password", req, ds);
 
-        const logic = await BaseService.checkSecurity(logger, "Auth:Get:User", req, ds);
+        const logic = await BaseService.checkSecurityName(logger, "Auth:Get:User", req, ds);
         const login = await AuthLogic.passwordLogin(ds, logic.user!.emailAddress, req.body["currentPassword"]);
         const passLogic = new PasswordLogic();
         const passEntity = await passLogic.reset(ds, login.user!.guid, req.body["newPassword"], req.body["confirmPassword"]);
